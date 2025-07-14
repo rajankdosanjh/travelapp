@@ -1,9 +1,12 @@
-from flask import Flask
-from config import Config
-from jinja2 import StrictUndefined
+import os
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or b'WR#&f&+%78er0we=%799eww+#7^90-;s'
 
+    UPLOAD_FOLDER = os.path.join(basedir, 'app', 'data', 'uploads')
+    MAX_CONTENT_LENGTH = 1 * 1024 * 1024
 
-app = Flask(__name__)
-app.jinja_env.undefined = StrictUndefined
-app.config.from_object(Config)
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app', 'data', 'data.sqlite')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = True
