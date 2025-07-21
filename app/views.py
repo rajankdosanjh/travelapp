@@ -1,7 +1,7 @@
 from flask import render_template
 from app import app
-
-
+from . import app, db
+from .models import Location
 
 @app.route("/", methods=["GET", "POST"])
 def home():

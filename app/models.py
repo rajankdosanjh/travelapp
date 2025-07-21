@@ -1,10 +1,8 @@
-from app import db
-from dataclasses import dataclass
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy as sa
 import sqlalchemy.orm as so
+from app import db
 
-db = SQLAlchemy()
 
 class Location(db.Model):
     __tablename__ = 'locations'

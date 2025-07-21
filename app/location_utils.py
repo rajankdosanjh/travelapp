@@ -1,7 +1,6 @@
 from app import db
 from app.models import Location
 
-
 def reset_db():
     db.drop_all()
     db.create_all()
@@ -49,9 +48,10 @@ def reset_db():
         {'name': 'Cirque le Soir', 'latitude': 51.5135, 'longitude': -0.1358, 'category': 6, 'tiktok_rating': 4.2}
     ]
 
-    for loc_data in locations:
-        location = Location(**loc_data)
-        db.session.add(location)
+    for loc in locations:
+        db.session.add(Location(**loc))
 
     db.session.commit()
     print(f"Database initialized with {len(locations)} locations.")
+    loc = db.session.get(Location, 1)
+    print(loc)
