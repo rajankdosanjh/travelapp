@@ -38,7 +38,7 @@ function displayRoute() {
       map.removeLayer(routeLayer);
     }
     routeLayer = L.geoJSON(data, {
-      style: { color: 'blue', weight: 5 }
+      style: { color: 'pink', weight: 5 }
     }).addTo(map);
     map.fitBounds(routeLayer.getBounds());
   })
