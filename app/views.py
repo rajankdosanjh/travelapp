@@ -1,11 +1,29 @@
-from flask import render_template
+from flask import render_template, jsonify, request
 from app import app
 from . import app, db
 from .models import Location
+from app.nsga_core import get_optimized_routes
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     return render_template('home.html', title="Home")
+
+
+
+@app.route("/api/optimize-routes")
+def optimize_routes():
+    try:
+        user_prefs = {int(p) for p in request.args.get('prefs', '2,5').split(',')}
+        routes = get_optimized_routes(user_prefs)
+        return jsonify({
+            'status': 'success',
+            'data': routes
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e)
+        }), 500
 
 # Error handlers
 # See: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
