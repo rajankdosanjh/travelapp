@@ -22,10 +22,10 @@ function displayRoute() {
     return;
   }
 
-  fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+  fetch('https://api.openrouteservice.org/v2/directions/foot-walking/geojson', {
     method: 'POST',
     headers: {
-      'Authorization': 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImRhNjdmYWZhYmE2ZTQ1MzA5ZjNlMDBmYTllMjkwMGJjIiwiaCI6Im11cm11cjY0In0=', // Replace this!
+      'Authorization': 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImRhNjdmYWZhYmE2ZTQ1MzA5ZjNlMDBmYTllMjkwMGJjIiwiaCI6Im11cm11cjY0In0=',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
