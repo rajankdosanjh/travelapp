@@ -1,6 +1,6 @@
 let map = L.map('map').setView([51.5074, -0.1278], 13); // Centered on London
 
-// Add OpenStreetMap tiles
+// OpenStreetMap Tile
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
@@ -8,14 +8,36 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 let markerList = [];
 let routeLayer = null;
 
-// On map click, add marker
-map.on('click', function(e) {
-  const latlng = e.latlng;
-  const marker = L.marker(latlng).addTo(map);
-  markerList.push([latlng.lng, latlng.lat]); // ORS uses [lng, lat]
-});
+fetch('/api/locations')
+  .then(res => res.json())
+  .then(locations => {
+    const ColoursbyCategory = {
+      'Food and Drink' : 'red',
+      'History': 'blue',
+      'Shopping': 'green',
+      'Nature': 'orange',
+      'Culture': 'purple',
+      'Nightlife': 'yellow'
+    };
+    locations.forEach(loc => {
+      const colour = ColoursbyCategory[loc.category] || 'gray';
+      const marker = L.marker([loc.latitude, loc.longitude], {
+        icon: L.divIcon({
+          className: 'custom-icon',
+          html: `<div style="background:${colour}; width:12px; height:12px; border-radius:50%;"></div>`
+        })
+      }).addTo(map);
 
-// Display the route using ORS
+      marker.bindPopup(`<b>${loc.name}</b><br><b>${loc.category}</b></br><br><button onclick="addToRoute(${loc.longitude}, ${loc.latitude})">Add to Route</button>`);
+    });
+  })
+  .catch(err => console.error(err));
+
+function addToRoute(lng, lat) {
+  markerList.push([lng, lat]);
+}
+
+// Displays the route using ORS
 function displayRoute() {
   if (markerList.length < 2) {
     alert('Please select at least two points.');
@@ -38,7 +60,7 @@ function displayRoute() {
       map.removeLayer(routeLayer);
     }
     routeLayer = L.geoJSON(data, {
-      style: { color: 'pink', weight: 5 }
+      style: { color: 'blue', weight: 5 }
     }).addTo(map);
     map.fitBounds(routeLayer.getBounds());
   })

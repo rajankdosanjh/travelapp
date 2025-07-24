@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "bootstrap_wtf.html" as wtf %}
+
+{% block content %}
+<head>
+  <title>London Route Planner</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    #map {
+      height: 600px;
+      width: 100%;}
+    button {
+      margin-top: 10px;}
+  </style>
+</head>
+<body>
+  <h2>Select Locations</h2>
+  <style>
+  h2 {
+    text-align: center;
+  }
+ </style>
+  <div id="map"></div>
+  <button onclick="displayRoute()">Display Route</button>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ors-js@2.1.0/dist/ors-js-client.min.js"></script>
+  <script src="{{ url_for('static', filename='map.js') }}"></script>
+
+    </body>
+{% endblock %}
+

@@ -1,29 +1,31 @@
 from flask import render_template, jsonify, request
 from app import app
-from . import app, db
-from .models import Location
-from app.nsga_core import get_optimized_routes
+from app.models import Location
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     return render_template('home.html', title="Home")
 
+@app.route("/locations")
+def locations():
+        return render_template("locations.html", title="Locations Map")
 
+@app.route('/api/locations')
+def show_locations():
+    location = Location.query.all()
+    data = []
+    for loc in location:
+    # 3. Create a dictionary for the current location
+        location_data = {
+            'id': loc.id,
+            'name': loc.name,
+            'latitude': loc.latitude,
+            'longitude': loc.longitude,
+            'category': loc.category
+        }
+        data.append(location_data)
 
-@app.route("/api/optimize-routes")
-def optimize_routes():
-    try:
-        user_prefs = {int(p) for p in request.args.get('prefs', '2,5').split(',')}
-        routes = get_optimized_routes(user_prefs)
-        return jsonify({
-            'status': 'success',
-            'data': routes
-        }), 200
-    except Exception as e:
-        return jsonify({
-            'status': 'error',
-            'message': str(e)
-        }), 500
+    return jsonify(data)
 
 # Error handlers
 # See: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
