@@ -42,7 +42,7 @@
       font-size: 16px;
     }
     #category-form input[type="submit"]:hover{
-      background-color: #588559;
+      background-color: #8e98a1;
     }
     #clearroute-btn:hover {
         background-color: #5a6268;
@@ -58,12 +58,11 @@
             {{ form.category(id='category_select') }} <!-- Renders the dropdown select menu -->
             {{ form.submit() }}
         </form>
-        <button id="clearroute-btn" onclick="clearMap()">Clear Routes</button>
+        <button id="clearroute-btn">Clear Routes</button>
     </div>
 
 <div id="map"></div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ors-js@2.1.0/dist/ors-js-client.min.js"></script>
   <script src="{{ url_for('static', filename='map.js') }}"></script>
 </body>
 {% endblock %}

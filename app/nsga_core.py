@@ -1,170 +1,235 @@
-#this algorithm uses the DEAP library, built using my own code and the DEAP documentation
-from deap import base, creator, tools
 import random
-
+import requests
 import numpy as np
-from numpy.ma import count
-from pip._internal import locations
-
-from app import app, data
+from deap import base, creator, tools
 from app.models import Location
 
-
-
 # --- Configuration ---
-ors_api_key = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImRhNjdmYWZhYmE2ZTQ1MzA5ZjNlMDBmYTllMjkwMGJjIiwiaCI6Im11cm11cjY0In0='
-ors_api_url = 'https://api.openrouteservice.org/v2/directions/foot-walking/geojson'
-minimum_locations = 5
-maximum_locations = 8
-pop_size = count(locations)
-generations = 50 #no of iterations
-crossover = 0.9
-mutation = 0.1
+api_key_ors = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVhNTBiMzU5NzRkYjkxYTU5MDkzNDRiNTZkMTRiZWQxYTI2ZmQ1M2NhY2I3MmViOWRiZmJjODNlIiwiaCI6Im11cm11cjY0In0='
+ors_url = 'https://api.openrouteservice.org/v2/directions/foot-walking/geojson'
+MINIMUM_LOCATIONS = 5
+MAXIMUM_LOCATIONS = 8
+POP_SIZE = 100 #number of locations in the database
+GENERATIONS = 50
+CROSSOVER_PROB = 0.9
+MUTATION_PROB = 0.2
 
-def get_locations_dict():
-    with app.app_context():
-        locations = Location.query.all()
-        return {loc.id: {
-            'name': loc.name,
-            'latitude': loc.latitude,
-            'longitude': loc.longitude,
-            'category': loc.category,
-            'tiktok_rating': loc.tiktok_rating
-        } for loc in locations}
-
-def get_category_color(category):
-    color_map = {
-        'Food and Drink': '#FF0000',
-        'History': '#0000FF',
-        'Shopping': '#00FF00',
-        'Nature': '#FFA500',
-        'Culture': '#800080',
-        'Nightlife': '#FFFF00'
-    }
-    return color_map.get(category, '#999999')  # Default gray
-
-def generate_individual():
-    location_ids = list(get_locations_dict().keys())
-    return random.sample(location_ids, random.randint(minimum_locations, maximum_locations))
+# --- DEAP Global Setup ---
+creator.create("FitnessMulti", base.Fitness, weights=(-1.0, 1.0))
+creator.create("Individual", list, fitness=creator.FitnessMulti)
 
 
-def mutInsert(individual, indpb=0.1):
-    if random.random() < indpb and len(individual) > 1:
-        idx1, idx2 = random.sample(range(len(individual)), 2)
-        individual.insert(idx2, individual.pop(idx1))
-    return individual,
+# --- Data and API Functions ---
+
+def get_locations_dict(): #Fetches all locations from the database and returns them as a dictionary
+    locations = Location.query.all()
+    return {loc.id: {'name': loc.name, 'latitude': loc.latitude, 'longitude': loc.longitude, 'category': loc.category}
+            for loc in locations}
 
 
-def haversine_distance(lat1, lon1, lat2, lon2): #unsure if i need this if i am using the walking distance
-    radius = 6371
-    latitude_distance = np.radians(lat2 - lat1)
-    longitude_distance = np.radians(lon2 - lon1)
-    a = (np.sin(latitude_distance / 2) ** 2 + np.cos(np.radians(lat1)) * np.cos(np.radians(lat2)) * np.sin(longitude_distance / 2) ** 2)
-    return radius * 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
-
-
-def compute_distance(individual):
-    locations = get_locations_dict()
-    return sum(
-        haversine_distance(
-            locations[individual[i]]['latitude'], locations[individual[i]]['longitude'],
-            locations[individual[i + 1]]['latitude'], locations[individual[i + 1]]['longitude']
-        ) for i in range(len(individual) - 1)
-    )
-
-
-def compute_satisfaction(individual, user_prefs):
-    locations = get_locations_dict()
-    matches = sum(1 for loc_id in individual if locations[loc_id]['category'] in user_prefs)
-    return matches / len(individual)
+def get_category_colour_name(category_id): #Maps the category ID to a color name for the map markers - see below for key/value pairs
+    id_to_name_map = {1: 'Food and Drink', 2: 'History', 3: 'Shopping', 4: 'Nature', 5: 'Culture', 6: 'Nightlife'}
+    category_name = id_to_name_map.get(category_id)
+    colour_map = {'Food and Drink': 'red', 'History': 'blue', 'Shopping': 'yellow', 'Nature': 'green',
+                 'Culture': 'purple', 'Nightlife': 'black'}
+    return colour_map.get(category_name, 'grey')
 
 
 def get_ors_route(coordinates):
-    headers = {'Authorization': ors_api_key}
+    if len(coordinates) < 2:
+        return None
+    headers = {
+        'Authorization': api_key_ors,
+        'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
+        'Content-Type': 'application/json; charset=utf-8'
+    }
     try:
-        response = requests.post(ors_api_url, headers=headers, json={'coordinates': coordinates})
-        return response.json()['routes'][0]
-    except Exception as e:
-        print(f"ORS Error: {e}")
+        response = requests.post(ors_url, headers=headers, json={'coordinates': coordinates})
+        response.raise_for_status()
+        data = response.json()
+        # Correctly parse the 'features' key from the ORS response
+        if data and data.get('features'):
+            # Return the first feature, which contains the geometry
+            return data['features'][0]
+        else:
+            print("ORS Response Error: 'features' key not found or is empty in the response.")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"ORS Request Error: {e}")
+        return None
+    except (IndexError, KeyError, ValueError) as e:
+        print(f"ORS Response Error: Could not parse route from response. {e}")
         return None
 
 
-# --- Optimization Controller ---
+# --- Objective Functions ---
+
+def compute_distance(individual, locations_dict):
+    """Calculates the total distance of a route (to be minimized)."""
+    if not individual or len(individual) < 2:
+        return float('inf')
+    distance = 0
+    for i in range(len(individual) - 1):
+        loc1 = locations_dict[individual[i]]
+        loc2 = locations_dict[individual[i + 1]]
+        distance += np.sqrt((loc1['latitude'] - loc2['latitude']) ** 2 + (loc1['longitude'] - loc2['longitude']) ** 2)
+    return distance
+
+
+def compute_satisfaction(individual, locations_dict, user_prefs):
+    """Calculates the satisfaction score of a route (to be maximized)."""
+    if not user_prefs or not individual:
+        return 0
+    matches = sum(1 for loc_id in individual if locations_dict[loc_id]['category'] in user_prefs)
+    return matches / len(individual) if len(individual) > 0 else 0
+
+
+# --- DEAP Genetic Algorithm Setup ---
+
+def generate_individual(location_ids):
+    """Generates an individual route with a variable number of locations."""
+    if not location_ids or len(location_ids) < MINIMUM_LOCATIONS:
+        return []
+    max_len = min(len(location_ids), MAXIMUM_LOCATIONS)
+    min_len = min(len(location_ids), MINIMUM_LOCATIONS)
+    if min_len >= max_len:
+        return random.sample(location_ids, min_len)
+    return random.sample(location_ids, random.randint(min_len, max_len))
+
+
+# --- Custom Genetic Operators for Variable-Length Routes ---
+
+def custom_crossover(ind1, ind2):
+    """A robust ordered crossover (OX) for variable-length routes."""
+    parent1, parent2 = (ind1, ind2) if len(ind1) < len(ind2) else (ind2, ind1)
+    slice_start, slice_end = sorted(random.sample(range(len(parent1)), 2))
+    child_slice = parent1[slice_start:slice_end + 1]
+    remaining = [item for item in parent2 if item not in child_slice]
+    child = remaining[:slice_start] + child_slice + remaining[slice_start:]
+    if len(child) > MAXIMUM_LOCATIONS:
+        child = child[:MAXIMUM_LOCATIONS]
+    elif len(child) < MINIMUM_LOCATIONS:
+        needed = MINIMUM_LOCATIONS - len(child)
+        for loc in parent2:
+            if needed == 0: break
+            if loc not in child:
+                child.append(loc)
+                needed -= 1
+    ind1[:] = child
+    ind2[:] = ind2
+    return ind1, ind2
+
+
+def custom_mutation(individual, all_location_ids):
+    """Selects one of three mutation types (add, remove, or swap) at random."""
+    if not individual: return individual,
+    rand = random.random()
+    if rand < 0.33 and len(individual) < MAXIMUM_LOCATIONS:
+        possible_additions = [loc for loc in all_location_ids if loc not in individual]
+        if possible_additions:
+            individual.append(random.choice(possible_additions))
+    elif rand < 0.66 and len(individual) > MINIMUM_LOCATIONS:
+        individual.pop(random.randrange(len(individual)))
+    else:
+        if len(individual) > 0:
+            idx_to_replace = random.randrange(len(individual))
+            possible_swaps = [loc for loc in all_location_ids if loc not in individual]
+            if possible_swaps:
+                individual[idx_to_replace] = random.choice(possible_swaps)
+    return individual,
+
+
+# --- Main Optimization Controller ---
+
 def get_optimized_routes(user_prefs):
-    locations = get_locations_dict()
+    """Runs the NSGA-II algorithm to find the best routes."""
+    print("--- Starting NSGA-II Optimization ---")
+    user_prefs = [int(p) for p in user_prefs]
+    print(f"User Preferences (Category IDs): {user_prefs}")
 
-
-    # DEAP setup
-    creator.create("FitnessMulti", base.Fitness, weights=(-1.0, -1.0))
-    creator.create("Individual", list, fitness=creator.FitnessMulti)
+    locations_dict = get_locations_dict()
+    location_ids = list(locations_dict.keys())
+    print(f"Total locations available: {len(location_ids)}")
 
     toolbox = base.Toolbox()
-    toolbox.register("individual", tools.initIterate, creator.Individual, generate_individual)
+    toolbox.register("individual", tools.initIterate, creator.Individual, lambda: generate_individual(location_ids))
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-    toolbox.register("mate", tools.cxOrdered)
-    toolbox.register("mutate", mutInsert, indpb=mutation)
+    toolbox.register("mate", custom_crossover)
+    toolbox.register("mutate", custom_mutation, all_location_ids=location_ids)
     toolbox.register("select", tools.selNSGA2)
+    toolbox.register("evaluate", lambda ind: (
+        compute_distance(ind, locations_dict),
+        compute_satisfaction(ind, locations_dict, user_prefs)
+    ))
 
-    def evaluate(individual):
-        distance = compute_distance(individual)
-        satisfaction = compute_satisfaction(individual, user_prefs)
-        return distance, -satisfaction
+    pop = toolbox.population(n=POP_SIZE)
+    print(f"Initial population size: {len(pop)}")
 
-    toolbox.register("evaluate", evaluate)
-
-    # Run algorithm
-    pop = toolbox.population(n=pop_size)
+    # Evaluate the first generation
     for ind in pop:
-        ind.fitness.values = toolbox.evaluate(ind)
+        if ind: ind.fitness.values = toolbox.evaluate(ind)
 
-    for gen in range(generations):
+    # Main evolution loop
+    for gen in range(GENERATIONS):
         offspring = toolbox.select(pop, len(pop))
         offspring = [toolbox.clone(ind) for ind in offspring]
 
-        # Crossover
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < crossover:
+            if len(child1) > 0 and len(child2) > 0 and random.random() < CROSSOVER_PROB:
                 toolbox.mate(child1, child2)
                 del child1.fitness.values
                 del child2.fitness.values
 
-        # Mutation
         for mutant in offspring:
-            toolbox.mutate(mutant)
-            del mutant.fitness.values
+            if random.random() < MUTATION_PROB:
+                toolbox.mutate(mutant)
+                del mutant.fitness.values
 
-        # Evaluate
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
         for ind in invalid_ind:
-            ind.fitness.values = toolbox.evaluate(ind)
+            if ind: ind.fitness.values = toolbox.evaluate(ind)
 
-        pop = toolbox.select(pop + offspring, pop_size)
+        pop = toolbox.select(pop + offspring, POP_SIZE)
+        # Print progress every 10 generations
+        if (gen + 1) % 10 == 0:
+            print(f"Generation {gen + 1}/{GENERATIONS} complete.")
 
-    # Get top 3 routes
     pareto_front = tools.ParetoFront()
     pareto_front.update(pop)
 
-    routes = []
-    for i, ind in enumerate(list(pareto_front)[:3]):
-        coordinates = [
-            [locations[loc_id]['longitude'], locations[loc_id]['latitude']]
-            for loc_id in ind
-        ]
-        ors_route = get_ors_route(coordinates) if len(coordinates) > 1 else None
+    print(f"Pareto front size after evolution: {len(pareto_front)}")
 
-        routes.append({
+    valid_solutions = [ind for ind in pareto_front if ind]
+    if not valid_solutions:
+        print("!!! No valid solutions found in Pareto front. Returning empty list.")
+        return []
+
+    sorted_pareto = sorted(valid_solutions, key=lambda x: x.fitness.values[1], reverse=True)
+
+    routes = []
+    print(f"\n--- Top {min(3, len(sorted_pareto))} Routes ---")
+    for i, ind in enumerate(sorted_pareto[:3]):
+        coordinates = [[locations_dict[loc_id]['longitude'], locations_dict[loc_id]['latitude']] for loc_id in ind]
+        ors_route = get_ors_route(coordinates)
+
+        route_info = {
             'id': i + 1,
             'distance': ind.fitness.values[0],
-            'satisfaction': -ind.fitness.values[1],
-            'locations': [{
-                'id': loc_id,
-                'name': locations[loc_id]['name'],
-                'latitude': locations[loc_id]['latitude'],
-                'longitude': locations[loc_id]['longitude'],
-                'category': locations[loc_id]['category'],  # Include category
-                'color': get_category_color(locations[loc_id]['category'])  # Add colour
-            } for loc_id in ind],
-            'geometry': ors_route['geometry'] if ors_route else None
-        })
+            'satisfaction': ind.fitness.values[1],
+            'locations': [
+                {
+                    'id': loc_id,
+                    'name': locations_dict[loc_id]['name'],
+                    'latitude': locations_dict[loc_id]['latitude'],
+                    'longitude': locations_dict[loc_id]['longitude'],
+                    'color': get_category_colour_name(locations_dict[loc_id]['category'])
+                } for loc_id in ind
+            ],
+            'geometry': ors_route.get('geometry') if ors_route else None
+        }
+        routes.append(route_info)
+        print(
+            f"Route {i + 1}: Satisfaction = {route_info['satisfaction']:.2f}, Distance = {route_info['distance']:.2f}, Locations = {len(route_info['locations'])}")
 
+    print("--- Optimization Finished ---")
     return routes

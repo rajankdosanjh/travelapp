@@ -1,93 +1,113 @@
-let map = L.map('map').setView([51.5074, -0.1278], 13); // Centered on London
+document.addEventListener('DOMContentLoaded', function() {
+    const map = L.map('map').setView([51.5074, -0.1278], 13);
+    const resultsLayer = L.featureGroup().addTo(map);
 
-// OpenStreetMap Tile
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
-
-let markerList = [];
-let routeLayer = null;
-
-fetch('/api/locations')
-  .then(res => res.json())
-  .then(location => {
-    const ColoursbyCategory = {
-      'Food and Drink' : 'red',
-      'History': 'blue',
-      'Shopping': 'green',
-      'Nature': 'orange',
-      'Culture': 'purple',
-      'Nightlife': 'black'
-    };
-    location.forEach(loc => {
-      const colour = ColoursbyCategory[loc.category] || 'gray';
-      const marker = L.marker([loc.latitude, loc.longitude], {
-        icon: L.divIcon({
-          className: 'custom-icon',
-          html: `<div style="background:${colour}; width:12px; height:12px; border-radius:50%;"></div>`
-        })
-      }).addTo(map);
-
-      marker.bindPopup(`<b>${loc.name}</b><br><b>${loc.category}</b></br><b>Tiktok Satisfaction Rating: ${loc.tiktok_rating}</b> <button onclick="addToRoute(${loc.longitude}, ${loc.latitude})">Add to Route</button>`);
-    });
-  })
-  .catch(err => console.error(err));
-
-function addToRoute(lng, lat) {
-  markerList.push([lng, lat]);
-}
-
-// Displays the route using ORS
-function displayRoute() {
-  if (markerList.length < 2) {
-    alert('Please select at least two points.');
-    return;
-  }
-
-  fetch('https://api.openrouteservice.org/v2/directions/foot-walking/geojson', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6ImRhNjdmYWZhYmE2ZTQ1MzA5ZjNlMDBmYTllMjkwMGJjIiwiaCI6Im11cm11cjY0In0=',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      coordinates: markerList
-    })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (routeLayer) {
-      map.removeLayer(routeLayer);
-    }
-    routeLayer = L.geoJSON(data, {
-      style: { color: 'blue', weight: 5 }
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-    map.fitBounds(routeLayer.getBounds());
-  })
-  .catch(error => {
-    console.error('ORS Routing error:', error);
-    alert('Failed to generate route. Check your API key and network.');
 
-    function clearMap() {
-      resultsLayer.clearLayers();
-      map.setView([51.5074, -0.1278], 13); // Reset map view
+    /**
+     * Creates a custom colored icon for Leaflet maps.
+     */
+    function createColoredIcon(color) {
+        return L.divIcon({
+            className: 'custom-icon',
+            html: `<div style="background-color:${color}; width:12px; height:12px; border-radius:50%;"></div>`,
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-      // Find the form on the page by its ID
-      const form = document.getElementById('category-form');
-      if (form) {
-        // Listen for the 'submit' event
-        form.addEventListener('submit', function (event) {
-          // Prevent the default form submission, which would cause a page reload
-          event.preventDefault();
+    /**
+     * Fetches and displays all initial locations.
+     */
+    function fetchAndDisplayAllLocations() {
+        fetch('/api/locations')
+            .then(res => res.json())
+            .then(locations => {
+                const ColoursbyCategory = { 1: 'red', 2: 'blue', 3: 'yellow', 4: 'green', 5: 'purple', 6: 'black' };
+                locations.forEach(loc => {
+                    const colour = ColoursbyCategory[loc.category] || 'gray';
+                    L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(colour) })
+                        .addTo(map)
+                        .bindPopup(`<b>${loc.name}</b><br>Tiktok Satisfaction Rating: ${loc.tiktok_rating}`);
+                });
+            })
+            .catch(err => console.error("Failed to load initial locations:", err));
+    }
 
-          // Get the selected category ID from the dropdown menu
-          const categoryId = document.getElementById('category_select').value;
+    /**
+     * Clears all generated routes from the map.
+     */
+    function clearMap() {
+        resultsLayer.clearLayers();
+    }
 
-          // Call our main function to generate the route
-          generateRoute(categoryId);
+    /**
+     * Generates and displays optimized routes.
+     */
+    function generateRoute(categoryID) {
+        clearMap();
+        document.body.style.cursor = 'wait';
+
+        fetch('/api/optimize_routes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ preferences: [categoryID] })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok.');
+            return response.json();
+        })
+        .then(data => {
+            let routes = data;
+            if (!routes || routes.length === 0) {
+                alert("No routes could be generated for this category.");
+                return;
+            }
+            const routeColors = ['#007bff', '#28a745', '#dc3545'];
+            routes.forEach((route, index) => {
+                if (route.geometry) {
+                    L.geoJSON(route.geometry, {
+                        style: { color: routeColors[index % routeColors.length], weight: 6, opacity: 0.75 }
+                    }).addTo(resultsLayer);
+                }
+                route.locations.forEach(loc => {
+                    L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(loc.color) })
+                        .bindPopup(`<b>${loc.name}</b><br>Route: ${index + 1}<br>Satisfaction: ${route.satisfaction.toFixed(2)}`)
+                        .addTo(resultsLayer);
+                });
+            });
+
+            if (resultsLayer.getLayers().length > 0) {
+                map.fitBounds(resultsLayer.getBounds().pad(0.1));
+            }
+        })
+        .catch(error => {
+            console.error('Route Generation Error:', error);
+            alert('Failed to generate routes. Check console for details.');
+        })
+        .finally(() => {
+            document.body.style.cursor = 'default';
         });
-      }
-    });
-  })}
+    }
+
+    // --- SETUP EVENT LISTENERS (THE CRITICAL FIX) ---
+    const form = document.getElementById('category-form');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent page reload
+            const categoryID = document.getElementById('category_select').value;
+            generateRoute(categoryID);
+        });
+    }
+
+    const clearButton = document.getElementById('clearroute-btn');
+    if (clearButton) {
+        // This properly connects the button to the function
+        clearButton.addEventListener('click', clearMap);
+    }
+
+    // --- INITIAL LOAD ---
+    fetchAndDisplayAllLocations();
+});

@@ -2,6 +2,8 @@ from flask import render_template, jsonify, request
 from app import app
 from app.forms import RouteCategoryForm
 from app.models import Location
+from app.nsga_core import get_optimized_routes
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
