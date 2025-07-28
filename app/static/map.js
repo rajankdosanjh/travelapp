@@ -10,16 +10,16 @@ let routeLayer = null;
 
 fetch('/api/locations')
   .then(res => res.json())
-  .then(locations => {
+  .then(location => {
     const ColoursbyCategory = {
       'Food and Drink' : 'red',
       'History': 'blue',
       'Shopping': 'green',
       'Nature': 'orange',
       'Culture': 'purple',
-      'Nightlife': 'yellow'
+      'Nightlife': 'black'
     };
-    locations.forEach(loc => {
+    location.forEach(loc => {
       const colour = ColoursbyCategory[loc.category] || 'gray';
       const marker = L.marker([loc.latitude, loc.longitude], {
         icon: L.divIcon({
@@ -28,7 +28,7 @@ fetch('/api/locations')
         })
       }).addTo(map);
 
-      marker.bindPopup(`<b>${loc.name}</b><br><b>${loc.category}</b></br><br><button onclick="addToRoute(${loc.longitude}, ${loc.latitude})">Add to Route</button>`);
+      marker.bindPopup(`<b>${loc.name}</b><br><b>${loc.category}</b></br><b>Tiktok Satisfaction Rating: ${loc.tiktok_rating}</b> <button onclick="addToRoute(${loc.longitude}, ${loc.latitude})">Add to Route</button>`);
     });
   })
   .catch(err => console.error(err));
@@ -67,5 +67,27 @@ function displayRoute() {
   .catch(error => {
     console.error('ORS Routing error:', error);
     alert('Failed to generate route. Check your API key and network.');
-  });
-}
+
+    function clearMap() {
+      resultsLayer.clearLayers();
+      map.setView([51.5074, -0.1278], 13); // Reset map view
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Find the form on the page by its ID
+      const form = document.getElementById('category-form');
+      if (form) {
+        // Listen for the 'submit' event
+        form.addEventListener('submit', function (event) {
+          // Prevent the default form submission, which would cause a page reload
+          event.preventDefault();
+
+          // Get the selected category ID from the dropdown menu
+          const categoryId = document.getElementById('category_select').value;
+
+          // Call our main function to generate the route
+          generateRoute(categoryId);
+        });
+      }
+    });
+  })}

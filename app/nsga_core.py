@@ -34,12 +34,12 @@ def get_locations_dict():
 
 def get_category_color(category):
     color_map = {
-        1: '#FF0000',  # Food - Red
-        2: '#0000FF',  # History - Blue
-        3: '#00FF00',  # Shopping - Green
-        4: '#FFA500',  # Nature - Orange
-        5: '#800080',  # Art - Purple
-        6: '#FFFF00'   # Nightlife - Yellow
+        'Food and Drink': '#FF0000',
+        'History': '#0000FF',
+        'Shopping': '#00FF00',
+        'Nature': '#FFA500',
+        'Culture': '#800080',
+        'Nightlife': '#FFFF00'
     }
     return color_map.get(category, '#999999')  # Default gray
 

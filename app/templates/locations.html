@@ -12,24 +12,59 @@
   <style>
     #map {
       height: 600px;
-      width: 100%;}
-    button {
-      margin-top: 10px;}
+      width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .controls {
+      padding: 15px;
+      background-color: #8e98a1;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    #category-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    #category-form label {
+        font-weight: bold;
+    }
+    #category-form select, #category-form input[type="submit"], #clearroute-btn {
+      background-color: #588559;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    #category-form input[type="submit"]:hover{
+      background-color: #588559;
+    }
+    #clearroute-btn:hover {
+        background-color: #5a6268;
+    }
   </style>
 </head>
+
 <body>
-  <h2>Select Locations</h2>
-  <style>
-  h2 {
-    text-align: center;
-  }
- </style>
-  <div id="map"></div>
-  <button onclick="displayRoute()">Display Route</button>
+<div class="controls">
+        <form id="category-form" method="POST" action="">
+            {{ form.hidden_tag() }}
+            {{ form.category.label }}
+            {{ form.category(id='category_select') }} <!-- Renders the dropdown select menu -->
+            {{ form.submit() }}
+        </form>
+        <button id="clearroute-btn" onclick="clearMap()">Clear Routes</button>
+    </div>
+
+<div id="map"></div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ors-js@2.1.0/dist/ors-js-client.min.js"></script>
   <script src="{{ url_for('static', filename='map.js') }}"></script>
-
-    </body>
+</body>
 {% endblock %}
 

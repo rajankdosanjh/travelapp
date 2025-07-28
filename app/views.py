@@ -1,5 +1,6 @@
 from flask import render_template, jsonify, request
 from app import app
+from app.forms import RouteCategoryForm
 from app.models import Location
 
 @app.route("/", methods=["GET", "POST"])
@@ -8,24 +9,42 @@ def home():
 
 @app.route("/locations")
 def locations():
-        return render_template("locations.html", title="Locations Map")
+    form = RouteCategoryForm()
+    return render_template("locations.html", title="Locations Map", form=form)
 
 @app.route('/api/locations')
 def show_locations():
     location = Location.query.all()
     data = []
     for loc in location:
-    # 3. Create a dictionary for the current location
         location_data = {
             'id': loc.id,
             'name': loc.name,
             'latitude': loc.latitude,
             'longitude': loc.longitude,
-            'category': loc.category
+            'category': loc.category,
+            'tiktok_rating': loc.tiktok_rating
         }
         data.append(location_data)
 
     return jsonify(data)
+
+
+@app.route('/api/optimize_routes', methods=['POST'])
+def optimize_routes_endpoint():
+    """Receives user preferences, runs the NSGA-II algorithm, and returns the results."""
+    try:
+        data = request.get_json()
+        if not data or 'preferences' not in data:
+            return jsonify({"error": "User preferences not provided."}), 400
+
+        user_prefs = data.get('preferences', [])
+
+        optimized_routes = get_optimized_routes(user_prefs)
+        return jsonify(optimized_routes)
+    except Exception as e:
+        print(f"Error during optimization: {e}")
+        return jsonify({"error": "An error occurred during route optimization."}), 500
 
 # Error handlers
 # See: https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
