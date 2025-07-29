@@ -23,7 +23,7 @@ creator.create("Individual", list, fitness=creator.FitnessMulti)
 
 def get_locations_dict(): #Fetches all locations from the database and returns them as a dictionary
     locations = Location.query.all()
-    return {loc.id: {'name': loc.name, 'latitude': loc.latitude, 'longitude': loc.longitude, 'category': loc.category}
+    return {loc.id: {'name': loc.name, 'latitude': loc.latitude, 'longitude': loc.longitude, 'category_id': loc.category_id}
             for loc in locations}
 
 
@@ -80,7 +80,7 @@ def compute_satisfaction(individual, locations_dict, user_prefs):
     """Calculates the satisfaction score of a route (to be maximized)."""
     if not user_prefs or not individual:
         return 0
-    matches = sum(1 for loc_id in individual if locations_dict[loc_id]['category'] in user_prefs)
+    matches = sum(1 for loc_id in individual if locations_dict[loc_id]['category_id'] in user_prefs)
     return matches / len(individual) if len(individual) > 0 else 0
 
 
@@ -222,7 +222,7 @@ def get_optimized_routes(user_prefs):
                     'name': locations_dict[loc_id]['name'],
                     'latitude': locations_dict[loc_id]['latitude'],
                     'longitude': locations_dict[loc_id]['longitude'],
-                    'color': get_category_colour_name(locations_dict[loc_id]['category'])
+                    'color': get_category_colour_name(locations_dict[loc_id]['category_id'])
                 } for loc_id in ind
             ],
             'geometry': ors_route.get('geometry') if ors_route else None

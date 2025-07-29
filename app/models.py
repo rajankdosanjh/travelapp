@@ -11,9 +11,9 @@ class Location(db.Model):
     name: so.Mapped[str] = so.mapped_column(sa.String(100), index=True, unique=True)
     latitude: so.Mapped[float] = so.mapped_column(sa.Float)
     longitude: so.Mapped[float] = so.mapped_column(sa.Float)
-    category: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)  # 1=Food, 2=History, etc.
-    tiktok_rating: so.Mapped[float] = so.mapped_column(sa.Float)  # Aggregated from TikTok data
+    category_id: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)  # 1=Food, 2=History, etc.
+    rating: so.Mapped[float] = so.mapped_column(sa.Float)  # Aggregated from TikTok data
 
     def __repr__(self):
         return (f'Location(id={self.id}, name={self.name}, latitude={self.latitude}, longitude={self.longitude},'
-                f'category={self.category}, tiktok_rating={self.tiktok_rating})')
+                f'category_id={self.category}, rating={self.tiktok_rating})')

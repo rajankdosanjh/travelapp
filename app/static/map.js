@@ -6,9 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    /**
-     * Creates a custom colored icon for Leaflet maps.
-     */
     function createColoredIcon(color) {
         return L.divIcon({
             className: 'custom-icon',
@@ -18,34 +15,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    /**
-     * Fetches and displays all initial locations.
-     */
     function fetchAndDisplayAllLocations() {
         fetch('/api/locations')
             .then(res => res.json())
             .then(locations => {
                 const ColoursbyCategory = { 1: 'red', 2: 'blue', 3: 'yellow', 4: 'green', 5: 'purple', 6: 'black' };
                 locations.forEach(loc => {
-                    const colour = ColoursbyCategory[loc.category] || 'gray';
+                    // Corrected to use 'category_id'
+                    const colour = ColoursbyCategory[loc.category_id] || 'gray';
                     L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(colour) })
                         .addTo(map)
-                        .bindPopup(`<b>${loc.name}</b><br>Tiktok Satisfaction Rating: ${loc.tiktok_rating}`);
+                        // Corrected to use 'rating'
+                        .bindPopup(`<b>${loc.name}</b><br>Satisfaction Rating: ${loc.rating}`);
                 });
             })
             .catch(err => console.error("Failed to load initial locations:", err));
     }
 
-    /**
-     * Clears all generated routes from the map.
-     */
     function clearMap() {
         resultsLayer.clearLayers();
     }
 
-    /**
-     * Generates and displays optimized routes.
-     */
     function generateRoute(categoryID) {
         clearMap();
         document.body.style.cursor = 'wait';
@@ -92,11 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- SETUP EVENT LISTENERS (THE CRITICAL FIX) ---
     const form = document.getElementById('category-form');
     if (form) {
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent page reload
+            event.preventDefault();
             const categoryID = document.getElementById('category_select').value;
             generateRoute(categoryID);
         });
@@ -104,10 +93,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const clearButton = document.getElementById('clearroute-btn');
     if (clearButton) {
-        // This properly connects the button to the function
         clearButton.addEventListener('click', clearMap);
     }
 
-    // --- INITIAL LOAD ---
     fetchAndDisplayAllLocations();
 });
