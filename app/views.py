@@ -23,7 +23,6 @@ def show_locations():
             'name': loc.name,
             'latitude': loc.latitude,
             'longitude': loc.longitude,
-            # Corrected keys to match the model and what the frontend will use
             'category_id': loc.category_id,
             'rating': loc.rating
         }
@@ -32,7 +31,6 @@ def show_locations():
 
 @app.route('/api/optimize_routes', methods=['POST'])
 def optimize_routes_endpoint():
-    """Receives user preferences, runs the NSGA-II algorithm, and returns the results."""
     try:
         data = request.get_json()
         if not data or 'preferences' not in data:
@@ -45,7 +43,7 @@ def optimize_routes_endpoint():
         print(f"Error during optimization: {e}")
         return jsonify({"error": "An error occurred during route optimization."}), 500
 
-# Error handlers remain the same
+
 @app.errorhandler(403)
 def error_403(error):
     return render_template('errors/403.html', title='Error'), 403

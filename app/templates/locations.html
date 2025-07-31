@@ -3,7 +3,7 @@
 
 {% block content %}
 <head>
-  <title>London Route Planner</title>
+  <title>TikTour - London Route Planner</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -55,7 +55,7 @@
         <form id="category-form" method="POST" action="">
             {{ form.hidden_tag() }}
             {{ form.category.label }}
-            {{ form.category(id='category_select') }} <!-- Renders the dropdown select menu -->
+            {{ form.category(id='category_select') }}
             {{ form.submit() }}
         </form>
         <button id="clearroute-btn">Clear Routes</button>

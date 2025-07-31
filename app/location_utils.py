@@ -3,10 +3,6 @@ from app import app, db
 from app.models import Location
 
 def reset_db():
-    """
-    Drops all tables, recreates them, and populates the locations table
-    from the CSV file specified in the config.
-    """
     with app.app_context():
         try:
             print("--- Dropping all database tables... ---")

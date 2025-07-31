@@ -1,17 +1,16 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {      //listener function - waits for all other code to run before map is called
     const map = L.map('map').setView([51.5074, -0.1278], 13);
     const resultsLayer = L.featureGroup().addTo(map);
-    // NEW: Get a reference to the container for route details
     const routesContainer = document.getElementById('routes-container');
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    function createColoredIcon(color) {
+    function createColouredIcon(colour) {
         return L.divIcon({
             className: 'custom-icon',
-            html: `<div style="background-color:${color}; width:12px; height:12px; border-radius:50%;"></div>`,
+            html: `<div style="background-color:${colour}; width:12px; height:12px; border-radius:50%;"></div>`,
             iconSize: [12, 12],
             iconAnchor: [6, 6]
         });
@@ -24,17 +23,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const ColoursbyCategory = { 1: 'red', 2: 'blue', 3: 'yellow', 4: 'green', 5: 'purple', 6: 'black' };
                 locations.forEach(loc => {
                     const colour = ColoursbyCategory[loc.category_id] || 'gray';
-                    L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(colour) })
+                    L.marker([loc.latitude, loc.longitude], { icon: createColouredIcon(colour) })
                         .addTo(map)
-                        .bindPopup(`<b>${loc.name}</b><br>Rating: ${loc.rating}`);
+                        .bindPopup(`<b>${loc.name}</b>}`);  //<br>Rating: ${loc.rating
                 });
             })
             .catch(err => console.error("Failed to load initial locations:", err));
     }
 
-    function clearMap() {
+    function clearMap() {   //Clears the route details from the page
         resultsLayer.clearLayers();
-        // NEW: Clear the route details from the page
         if (routesContainer) {
             routesContainer.innerHTML = '';
         }
@@ -44,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         clearMap();
         document.body.style.cursor = 'wait';
 
-        fetch('/api/optimize_routes', {
+        fetch('/api/optimize_routes', {     //API call to Flask server
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ preferences: [categoryID] })
@@ -55,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             let routes = data;
-            // NEW: Clear previous results from the container
             if (routesContainer) {
                 routesContainer.innerHTML = '';
             }
@@ -64,27 +61,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert("No routes could be generated for this category.");
                 return;
             }
-            const routeColors = ['#007bff', '#28a745', '#dc3545'];
-            routes.forEach((route, index) => {
-                // Draw route geometry on the map
+            const routeColours = ['#007bff', '#28a745', '#dc3545'];
+            routes.forEach((route, index) => {  // Draws route geometry on the map
                 if (route.geometry) {
                     L.geoJSON(route.geometry, {
-                        style: { color: routeColors[index % routeColors.length], weight: 6, opacity: 0.75 }
+                        style: { color: routeColours[index % routeColours.length], weight: 6, opacity: 0.75 }
                     }).addTo(resultsLayer);
                 }
-                // Add markers for each location in the route
-                route.locations.forEach(loc => {
-                    L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(loc.color) })
+
+                route.locations.forEach(loc => {    // Adds markers for each location in the route
+                    L.marker([loc.latitude, loc.longitude], { icon: createColouredIcon(loc.colour) })
                         .bindPopup(`<b>${loc.name}</b><br>Route: ${index + 1}<br>Avg. Rating: ${route.satisfaction.toFixed(2)}`)
                         .addTo(resultsLayer);
                 });
 
-                // NEW: Create and display the route details on the page
+
                 if (routesContainer) {
                     const routeDiv = document.createElement('div');
                     routeDiv.innerHTML = `
                         <h4>Route ${index + 1}</h4>
-                        <p><strong>Average Rating:</strong> ${route.satisfaction.toFixed(2)} | <strong>Distance Score:</strong> ${route.distance.toFixed(2)}</p>
+                        <p><strong>Average Rating:</strong> ${route.satisfaction.toFixed(2)}|
+                         <strong>Route Distance:</strong> ${(route.distance / 1000).toFixed(2)} km</p>
                         <ul>
                             ${route.locations.map(loc => `<li>${loc.name}</li>`).join('')}
                         </ul>
