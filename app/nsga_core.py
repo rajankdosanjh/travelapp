@@ -83,14 +83,18 @@ def compute_satisfaction(individual, locations_dict, user_preferences): #Calcula
 
 # DEAP Algorithm Set up - creating individuals
 
-def generate_individual(location_ids): #Generates an individual route with a variable number of locations - come back to this
-    if not location_ids or len(location_ids) < min_locations:
-        return []
-    max_len = min(len(location_ids), max_locations)
-    min_len = min(len(location_ids), min_locations)
-    if min_len >= max_len:
-        return random.sample(location_ids, min_len)
-    return random.sample(location_ids, random.randint(min_len, max_len))
+def generate_individual(location_ids, required_stops): #Generates an individual route with a variable number of locations - come back to this
+    individual = list(required_stops)
+
+    remaining_slots = random.randint(min_locations, max_locations) - len(individual)
+
+    if remaining_slots > 0:
+        possible_additions = [loc_id for loc_id in location_ids if loc_id not in individual]
+        if len(possible_additions) >= remaining_slots:
+            individual.extend(random.sample(possible_additions, remaining_slots))
+
+    random.shuffle(individual)
+    return individual
 
 
 #Crossover and Mutation Operators
@@ -115,36 +119,43 @@ def ox_crossover(ind1, ind2): #A robust ordered crossover (OX) for variable-leng
     return ind1, ind2
 
 
-def random_mutation(individual, all_location_ids): #Selects one of three mutation types (add, remove, or swap) at random, suggested in NSGA 22 July File
+def random_mutation(individual, all_location_ids, required_stops): #Selects one of three mutation types (add, remove, or swap) at random, suggested in NSGA 22 July File
+    mutable_indices = [i for i, loc_id in enumerate(individual) if loc_id not in required_stops]
     rand = random.random()
     if rand < 0.33 and len(individual) < max_locations: #add mutation
         possible_additions = [loc for loc in all_location_ids if loc not in individual]
         if possible_additions:
             individual.append(random.choice(possible_additions)) #randomly appends a new location to the end of the individual (ie the route)
-    elif rand < 0.66 and len(individual) > min_locations: #remove mutation
-        individual.pop(random.randrange(len(individual)))
-    else: #swap mutation
-        if len(individual) > 0:
-            loc_to_replace = random.randrange(len(individual))
-            possible_swaps = [loc for loc in all_location_ids if loc not in individual] #similar to add mutation, list of possible locations that can replace a current one
-            if possible_swaps:
-                individual[loc_to_replace] = random.choice(possible_swaps)
+    elif rand < 0.66 and len(individual) > min_locations and mutable_indices: #remove mutation
+        index_to_remove = random.choice(mutable_indices)
+        individual.pop(index_to_remove)
+    elif mutable_indices: #swap mutation
+        idx_to_replace = random.choice(mutable_indices)
+        possible_swaps = [loc for loc in all_location_ids if loc not in individual]
+        if possible_swaps:
+            individual[idx_to_replace] = random.choice(possible_swaps)
     return individual
 
 
 #Runs NSGA-II Algorithm and generates routes
 
-def get_optimized_routes(user_preferences): #Runs the NSGA-II algorithm to find the best routes
+def get_optimized_routes(user_preferences, required_stops=[]): #Runs the NSGA-II algorithm to find the best routes
     user_preferences = [int(p) for p in user_preferences]
+    required_stops = [int(rs) for rs in required_stops]
 
     locations_dict = locations_to_dict()
+    for stop_id in required_stops:
+        if stop_id not in locations_dict:
+            print(f"Error: Required stop {stop_id} is not in the selected category.")
+            return []
+
     location_ids = list(locations_dict.keys())
 
     toolbox = base.Toolbox() #sets up DEAP Toolbox - holds each function defined above so can be used by NSGA-II algorithm, ie whenever a new individual needs to be created, use line145
-    toolbox.register("individual", tools.initIterate, creator.Individual, lambda: generate_individual(location_ids))
+    toolbox.register("individual", tools.initIterate, creator.Individual, lambda: generate_individual(location_ids, required_stops))
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
     toolbox.register("mate", ox_crossover) #DEAP alias for crossover is 'mate'
-    toolbox.register("mutate", random_mutation, all_location_ids=location_ids)
+    toolbox.register("mutate", random_mutation, all_location_ids=location_ids, required_stops=required_stops)
     toolbox.register("select", tools.selNSGA2)
     toolbox.register("evaluate", lambda ind: (
         compute_distance(ind, locations_dict),

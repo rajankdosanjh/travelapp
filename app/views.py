@@ -36,8 +36,9 @@ def optimize_routes_endpoint():
         if not data or 'preferences' not in data:
             return jsonify({"error": "User preferences not provided."}), 400
 
-        user_prefs = data.get('preferences', [])
-        optimized_routes = get_optimized_routes(user_prefs)
+        user_preferences = data.get('preferences', [])
+        required_stops = data.get('required_stops', [])
+        optimized_routes = get_optimized_routes(user_preferences, required_stops)
         return jsonify(optimized_routes)
     except Exception as e:
         print(f"Error during optimization: {e}")

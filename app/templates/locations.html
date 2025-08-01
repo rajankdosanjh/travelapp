@@ -47,6 +47,27 @@
     #clearroute-btn:hover {
         background-color: #5a6268;
     }
+    .remove-loc-btn {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        padding: 2px 5px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .remove-loc-btn:hover {
+        background-color: #c82333;
+    }
+    #selected-locations-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
   </style>
 </head>
 
@@ -60,7 +81,12 @@
         </form>
         <button id="clearroute-btn">Clear Routes</button>
     </div>
-
+<div id="selected-locations-container">
+    <h4>Your Selected Stops</h4>
+    <ul id="selected-locations-list">
+        <li id="empty-selection-message"><i>No locations selected yet. Click a marker on the map to add one.</i></li>
+    </ul>
+</div>
 <div id="map"></div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="{{ url_for('static', filename='map.js') }}"></script>

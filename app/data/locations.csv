@@ -1,106 +1,106 @@
-name,latitude,longitude,category_id,rating
-"The British Museum",51.5194,-0.1269,5,4.9
-"Tate Modern",51.5076,-0.0994,5,4.8
-"National Gallery",51.5089,-0.1283,5,4.7
-"Natural History Museum",51.4969,-0.1764,5,4.8
-"Victoria and Albert Museum",51.4966,-0.1722,5,4.6
-"Science Museum",51.4978,-0.1745,5,4.7
-"Tower of London",51.5081,-0.0759,2,4.9
-"Westminster Abbey",51.4994,-0.1273,2,4.8
-"St. Paul's Cathedral",51.5138,-0.0983,2,4.7
-"Houses of Parliament",51.4996,-0.1246,2,4.8
-"Buckingham Palace",51.5014,-0.1419,2,4.7
-"Tower Bridge",51.5055,-0.0754,2,4.8
-"Kensington Palace",51.5050,-0.1877,2,4.5
-"Churchill War Rooms",51.5021,-0.1293,2,4.6
-"The Monument",51.5101,-0.0860,2,4.3
-"Shakespeare's Globe",51.5081,-0.0972,2,4.5
-"Borough Market",51.5056,-0.0913,1,4.7
-"Dishoom Covent Garden",51.5126,-0.1243,1,4.8
-"The Wolseley",51.5079,-0.1426,1,4.5
-"Padella",51.5113,-0.1211,1,4.6
-"Hoppers Soho",51.5132,-0.1314,1,4.4
-"Barrafina",51.5121,-0.1265,1,4.7
-"Duck & Waffle",51.5146,-0.0805,1,4.5
-"Kiln",51.5139,-0.1318,1,4.3
-"The Palomar",51.5124,-0.1287,1,4.6
-"Bao Borough",51.5052,-0.0918,1,4.5
-"The Barbary",51.5138,-0.1279,1,4.7
-"Brat",51.5131,-0.0778,1,4.6
-"Clos Maggiore",51.5118,-0.1283,1,4.8
-"Gymkhana",51.5129,-0.1423,1,4.7
-"The Ledbury",51.5163,-0.1978,1,4.9
-"Harrods",51.4996,-0.1634,3,4.7
-"Oxford Street",51.5154,-0.1412,3,4.5
-"Covent Garden Market",51.5129,-0.1223,3,4.4
-"Liberty London",51.5139,-0.1448,3,4.3
-"Selfridges",51.5145,-0.1493,3,4.6
-"Fortnum & Mason",51.5093,-0.1406,3,4.5
-"Carnaby Street",51.5132,-0.1387,3,4.4
-"Regent Street",51.5135,-0.1398,3,4.3
-"Burlington Arcade",51.5098,-0.1409,3,4.2
-"Seven Dials Market",51.5131,-0.1261,3,4.1
-"Hyde Park",51.5073,-0.1657,4,4.8
-"Regent's Park",51.5310,-0.1593,4,4.6
-"St. James's Park",51.5034,-0.1316,4,4.7
-"Kensington Gardens",51.5076,-0.1793,4,4.5
-"Hampstead Heath",51.5631,-0.1595,4,4.6
-"Battersea Park",51.4798,-0.1496,4,4.4
-"Victoria Park",51.5369,-0.0390,4,4.3
-"Primrose Hill",51.5394,-0.1598,4,4.7
-"Holland Park",51.5031,-0.2043,4,4.5
-"Richmond Park",51.4447,-0.2796,4,4.9
-"Greenwich Park",51.4769,-0.0005,4,4.8
-"Fabric Nightclub",51.5203,-0.1048,6,4.5
-"Ministry of Sound",51.4975,-0.0997,6,4.4
-"The Roxy",51.5132,-0.1313,6,4.3
-"Cirque le Soir",51.5135,-0.1358,6,4.2
-"XOYO",51.5269,-0.0808,6,4.6
-"Printworks London",51.4975,-0.0435,6,4.8
-"Heaven",51.5083,-0.1246,6,4.3
-"Corsica Studios",51.4916,-0.1039,6,4.5
-"Electric Brixton",51.4646,-0.1147,6,4.4
-"Ronnie Scott's Jazz Club",51.5133,-0.1292,6,4.9
-"Tate Britain",51.4911,-0.1278,5,4.6
-"Saatchi Gallery",51.4907,-0.1584,5,4.5
-"Royal Academy of Arts",51.5090,-0.1398,5,4.7
-"The Courtauld Gallery",51.5113,-0.1171,5,4.8
-"Whitechapel Gallery",51.5155,-0.0713,5,4.5
-"Camden Market",51.5415,-0.1466,3,4.6
-"Portobello Road Market",51.5165,-0.2016,3,4.5
-"Spitalfields Market",51.5193,-0.0754,3,4.6
-"Columbia Road Flower Market",51.5289,-0.0716,3,4.7
-"Leadenhall Market",51.5126,-0.0839,3,4.6
-"The Gherkin",51.5145,-0.0803,5,4.5
-"The Walkie-Talkie",51.5111,-0.0835,5,4.6
-"Canary Wharf",51.5054,-0.0235,3,4.4
-"One Canada Square",51.5050,-0.0197,5,4.3
-"Cutty Sark",51.4828,-0.0097,2,4.6
-"Royal Observatory Greenwich",51.4769,0.0005,2,4.7
-"National Maritime Museum",51.4809,-0.0053,2,4.6
-"HMS Belfast",51.5065,-0.0813,2,4.7
-"Imperial War Museum",51.4957,-0.1086,2,4.8
-"London Eye",51.5033,-0.1195,5,4.7
-"SEA LIFE London Aquarium",51.5022,-0.1189,5,4.4
-"Madame Tussauds London",51.5229,-0.1548,5,4.4
-"The London Dungeon",51.5026,-0.1183,5,4.3
-"Shrek's Adventure! London",51.5029,-0.1190,5,4.2
-"Wembley Stadium",51.5560,-0.2795,5,4.7
-"The O2",51.5030,0.0032,6,4.6
-"Alexandra Palace",51.5941,-0.1302,5,4.5
-"Roundhouse",51.5434,-0.1506,6,4.6
-"KOKO",51.5361,-0.1388,6,4.5
-"The Old Vic",51.5022,-0.1098,5,4.7
-"Sadler's Wells Theatre",51.5292,-0.1062,5,4.8
-"Royal Opera House",51.5129,-0.1224,5,4.9
-"London Coliseum",51.5098,-0.1260,5,4.8
-"The Globe Theatre",51.5081,-0.0972,5,4.6
-"Wimbledon",51.4340,-0.2144,4,4.8
-"Twickenham Stadium",51.4561,-0.3413,5,4.7
-"Lord's Cricket Ground",51.5292,-0.1728,5,4.6
-"Emirates Stadium",51.5549,-0.1084,5,4.7
-"Stamford Bridge",51.4817,-0.1910,5,4.6
-"London Stadium",51.5386,-0.0166,5,4.5
-"Kew Gardens",51.4789,-0.2957,4,4.8
-"Hampton Court Palace",51.4037,-0.3377,2,4.7
-"Windsor Castle",51.4838,-0.6044,2,4.8
+id,name,latitude,longitude,category_id,rating
+1,"The British Museum",51.5194,-0.1269,5,4.9
+2,"Tate Modern",51.5076,-0.0994,5,4.8
+3,"National Gallery",51.5089,-0.1283,5,4.7
+4,"Natural History Museum",51.4969,-0.1764,5,4.8
+5,"Victoria and Albert Museum",51.4966,-0.1722,5,4.6
+6,"Science Museum",51.4978,-0.1745,5,4.7
+7,"Tower of London",51.5081,-0.0759,2,4.9
+8,"Westminster Abbey",51.4994,-0.1273,2,4.8
+9,"St. Paul's Cathedral",51.5138,-0.0983,2,4.7
+10,"Houses of Parliament",51.4996,-0.1246,2,4.8
+11,"Buckingham Palace",51.5014,-0.1419,2,4.7
+12,"Tower Bridge",51.5055,-0.0754,2,4.8
+13,"Kensington Palace",51.5050,-0.1877,2,4.5
+14,"Churchill War Rooms",51.5021,-0.1293,2,4.6
+15,"The Monument",51.5101,-0.0860,2,4.3
+16,"Shakespeare's Globe",51.5081,-0.0972,2,4.5
+17,"Borough Market",51.5056,-0.0913,1,4.7
+18,"Dishoom Covent Garden",51.5126,-0.1243,1,4.8
+19,"The Wolseley",51.5079,-0.1426,1,4.5
+20,"Padella",51.5113,-0.1211,1,4.6
+21,"Hoppers Soho",51.5132,-0.1314,1,4.4
+22,"Barrafina",51.5121,-0.1265,1,4.7
+23,"Duck & Waffle",51.5146,-0.0805,1,4.5
+24,"Kiln",51.5139,-0.1318,1,4.3
+25,"The Palomar",51.5124,-0.1287,1,4.6
+26,"Bao Borough",51.5052,-0.0918,1,4.5
+27,"The Barbary",51.5138,-0.1279,1,4.7
+28,"Brat",51.5131,-0.0778,1,4.6
+29,"Clos Maggiore",51.5118,-0.1283,1,4.8
+30,"Gymkhana",51.5129,-0.1423,1,4.7
+31,"The Ledbury",51.5163,-0.1978,1,4.9
+32,"Harrods",51.4996,-0.1634,3,4.7
+33,"Oxford Street",51.5154,-0.1412,3,4.5
+34,"Covent Garden Market",51.5129,-0.1223,3,4.4
+35,"Liberty London",51.5139,-0.1448,3,4.3
+36,"Selfridges",51.5145,-0.1493,3,4.6
+37,"Fortnum & Mason",51.5093,-0.1406,3,4.5
+38,"Carnaby Street",51.5132,-0.1387,3,4.4
+39,"Regent Street",51.5135,-0.1398,3,4.3
+40,"Burlington Arcade",51.5098,-0.1409,3,4.2
+41,"Seven Dials Market",51.5131,-0.1261,3,4.1
+42,"Hyde Park",51.5073,-0.1657,4,4.8
+43,"Regent's Park",51.5310,-0.1593,4,4.6
+44,"St. James's Park",51.5034,-0.1316,4,4.7
+45,"Kensington Gardens",51.5076,-0.1793,4,4.5
+46,"Hampstead Heath",51.5631,-0.1595,4,4.6
+47,"Battersea Park",51.4798,-0.1496,4,4.4
+48,"Victoria Park",51.5369,-0.0390,4,4.3
+49,"Primrose Hill",51.5394,-0.1598,4,4.7
+50,"Holland Park",51.5031,-0.2043,4,4.5
+51,"Richmond Park",51.4447,-0.2796,4,4.9
+52,"Greenwich Park",51.4769,-0.0005,4,4.8
+53,"Fabric Nightclub",51.5203,-0.1048,6,4.5
+54,"Ministry of Sound",51.4975,-0.0997,6,4.4
+55,"The Roxy",51.5132,-0.1313,6,4.3
+56,"Cirque le Soir",51.5135,-0.1358,6,4.2
+57,"XOYO",51.5269,-0.0808,6,4.6
+58,"Printworks London",51.4975,-0.0435,6,4.8
+59,"Heaven",51.5083,-0.1246,6,4.3
+60,"Corsica Studios",51.4916,-0.1039,6,4.5
+61,"Electric Brixton",51.4646,-0.1147,6,4.4
+62,"Ronnie Scott's Jazz Club",51.5133,-0.1292,6,4.9
+63,"Tate Britain",51.4911,-0.1278,5,4.6
+64,"Saatchi Gallery",51.4907,-0.1584,5,4.5
+65,"Royal Academy of Arts",51.5090,-0.1398,5,4.7
+66,"The Courtauld Gallery",51.5113,-0.1171,5,4.8
+67,"Whitechapel Gallery",51.5155,-0.0713,5,4.5
+68,"Camden Market",51.5415,-0.1466,3,4.6
+69,"Portobello Road Market",51.5165,-0.2016,3,4.5
+70,"Spitalfields Market",51.5193,-0.0754,3,4.6
+71,"Columbia Road Flower Market",51.5289,-0.0716,3,4.7
+72,"Leadenhall Market",51.5126,-0.0839,3,4.6
+73,"The Gherkin",51.5145,-0.0803,5,4.5
+74,"The Walkie-Talkie",51.5111,-0.0835,5,4.6
+75,"Canary Wharf",51.5054,-0.0235,3,4.4
+76,"One Canada Square",51.5050,-0.0197,5,4.3
+77,"Cutty Sark",51.4828,-0.0097,2,4.6
+78,"Royal Observatory Greenwich",51.4769,0.0005,2,4.7
+79,"National Maritime Museum",51.4809,-0.0053,2,4.6
+80,"HMS Belfast",51.5065,-0.0813,2,4.7
+81,"Imperial War Museum",51.4957,-0.1086,2,4.8
+82,"London Eye",51.5033,-0.1195,5,4.7
+83,"SEA LIFE London Aquarium",51.5022,-0.1189,5,4.4
+84,"Madame Tussauds London",51.5229,-0.1548,5,4.4
+85,"The London Dungeon",51.5026,-0.1183,5,4.3
+86,"Shrek's Adventure! London",51.5029,-0.1190,5,4.2
+87,"Wembley Stadium",51.5560,-0.2795,5,4.7
+88,"The O2",51.5030,0.0032,6,4.6
+89,"Alexandra Palace",51.5941,-0.1302,5,4.5
+90,"Roundhouse",51.5434,-0.1506,6,4.6
+91,"KOKO",51.5361,-0.1388,6,4.5
+92,"The Old Vic",51.5022,-0.1098,5,4.7
+93,"Sadler's Wells Theatre",51.5292,-0.1062,5,4.8
+94,"Royal Opera House",51.5129,-0.1224,5,4.9
+95,"London Coliseum",51.5098,-0.1260,5,4.8
+96,"The Globe Theatre",51.5081,-0.0972,5,4.6
+97,"Wimbledon",51.4340,-0.2144,4,4.8
+98,"Twickenham Stadium",51.4561,-0.3413,5,4.7
+99,"Lord's Cricket Ground",51.5292,-0.1728,5,4.6
+100,"Emirates Stadium",51.5549,-0.1084,5,4.7
+101,"Stamford Bridge",51.4817,-0.1910,5,4.6
+102,"London Stadium",51.5386,-0.0166,5,4.5
+103,"Kew Gardens",51.4789,-0.2957,4,4.8
+104,"Hampton Court Palace",51.4037,-0.3377,2,4.7
+105,"Windsor Castle",51.4838,-0.6044,2,4.8
