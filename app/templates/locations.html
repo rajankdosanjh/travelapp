@@ -33,7 +33,7 @@
     #category-form label {
         font-weight: bold;
     }
-    #category-form select, #category-form input[type="submit"], #clearroute-btn {
+    #category-form input[type="submit"], #clearroute-btn {
       background-color: #588559;
       color: white;
       border: none;
@@ -47,20 +47,7 @@
     #clearroute-btn:hover {
         background-color: #5a6268;
     }
-    .remove-loc-btn {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-        padding: 2px 5px;
-        border-radius: 5px;
-        font-size: 14px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-left: 10px;
-    }
-    .remove-loc-btn:hover {
-        background-color: #c82333;
-    }
+
     #selected-locations-container {
         margin-top: 20px;
         margin-bottom: 20px;
@@ -68,16 +55,27 @@
         background-color: #f8f9fa;
         border-radius: 8px;
         border: 1px solid #dee2e6;
+    }
+    #routes-container {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
   </style>
 </head>
 
 <body>
 <div class="controls">
-        <form id="category-form" method="POST" action="">
+        <form id="category-form" class="form-inline" method="POST" action="">
             {{ form.hidden_tag() }}
-            {{ form.category.label }}
-            {{ form.category(id='category_select') }}
-            {{ form.submit() }}
+            <div class="form-group mb-2">
+                {{ form.category.label(class="mr-2") }}
+                {{ form.category(id='category_select', class="form-control") }}
+            </div>
+            {{ form.submit(class="btn btn-primary mb-2 ml-2") }}
         </form>
         <button id="clearroute-btn">Clear Routes</button>
     </div>
@@ -92,8 +90,8 @@
   <script src="{{ url_for('static', filename='map.js') }}"></script>
 
 <div id="route-details">
-    <h2>Your Optimized Routes</h2>
     <div id="routes-container">
+    <h2>Your Optimized Routes</h2>
         </div>
 </div>
 </body>

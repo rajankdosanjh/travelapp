@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Reviews for: <strong>{{ location.name }}</strong></h2>
+    <hr>
+    
+    {% if reviews %}
+        <ul class="list-group">
+            {% for review in reviews %}
+                <li class="list-group-item">
+                    <p>"{{ review.text }}"</p>
+                    <small class="text-muted">Sentiment Score: {{ "%.2f"|format(review.sentiment) }}</small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>There are no reviews for this location yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('locations') }}" class="btn btn-primary mt-3">Back to Map</a>
+</div>
+{% endblock %}

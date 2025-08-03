@@ -1,13 +1,12 @@
-// A global array to store user-selected location IDs
 let userSelectedLocations = [];
-// Global variable to hold all location data for easy lookup
 let allLocations = {};
+let routeIncludedLocations = new Set();
+let currentRoutes  =[];
 
-// Function to update the visible list of selected locations on the page
 function updateSelectedLocationsList() {
     const listElement = document.getElementById('selected-locations-list');
     const emptyMessage = document.getElementById('empty-selection-message');
-    listElement.innerHTML = ''; // Clear the list
+    listElement.innerHTML = '';
 
     if (userSelectedLocations.length === 0 && emptyMessage) {
         listElement.appendChild(emptyMessage);
@@ -21,6 +20,81 @@ function updateSelectedLocationsList() {
             }
         });
     }
+}
+
+//Updates route included locations
+function updateRouteIncludedLocations(routes) {
+    routeIncludedLocations.clear();
+    if (routes && routes.length > 0) {
+        routes.forEach(route => {
+            route.locations.forEach(loc => {
+                routeIncludedLocations.add(loc.id);
+            });
+        });
+    }
+}
+
+// Checks if a location is in any route
+function isLocationInRoute(locId) {
+    return routeIncludedLocations.has(locId);
+}
+
+function createPopUps(loc, marker) {
+    const container = document.createElement('div');
+    const isSelected = userSelectedLocations.includes(loc.id) || isLocationInRoute(loc.id);
+
+
+    const nameElement = document.createElement('b');
+    nameElement.textContent = loc.name;
+    container.appendChild(nameElement);
+    container.appendChild(document.createElement('br'));
+
+
+    if (loc.reviews && loc.reviews.length > 0) {
+        const reviewsButton = document.createElement('a');
+        reviewsButton.href = `location/${loc.id}/reviews`;
+        reviewsButton.className = "btn btn-info";
+        reviewsButton.textContent = 'See Reviews';
+        reviewsButton.style.marginRight = '5px';
+        container.appendChild(reviewsButton);
+    } else {
+        const noReviews = document.createElement('p');
+        noReviews.textContent = 'No Reviews Available';
+        container.appendChild(noReviews);
+    }
+
+    // Add/remove route button
+    const routeButton = document.createElement('button');
+    routeButton.className = "btn btn-info";
+    routeButton.textContent = isSelected ? 'Remove From Route' : 'Add to Route';
+
+    routeButton.addEventListener('click', () => {
+        const index = userSelectedLocations.indexOf(loc.id);
+        if (index > -1 || isLocationInRoute(loc.id)) {
+            // Remove from route
+            userSelectedLocations = userSelectedLocations.filter(id => id !== loc.id);
+            routeIncludedLocations.delete(loc.id);
+        } else {
+            // Add to route
+            if (!userSelectedLocations.includes(loc.id)) {
+                userSelectedLocations.push(loc.id);
+            }
+        }
+
+
+        updateSelectedLocationsList();
+
+
+        marker.closePopup();
+        marker.bindPopup(() => createPopUps(loc, marker)).openPopup();
+
+        // Regenerates the route
+        const categoryID = document.getElementById('category_select').value;
+        generateRoute(categoryID);
+    });
+
+    container.appendChild(routeButton);
+    return container;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -45,42 +119,20 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/api/locations')
             .then(res => res.json())
             .then(locations => {
-                locations.forEach(loc => { allLocations[loc.id] = loc; });
-
-                const ColoursbyCategory = { 1: 'red', 2: 'blue', 3: 'yellow', 4: 'green', 5: 'purple', 6: 'black' };
+                locations.forEach(loc => {
+                    allLocations[loc.id] = loc;
+                });
+                const ColoursbyCategory = {1: 'red', 2: 'blue', 3: 'yellow', 4: 'green', 5: 'purple', 6: 'black'};
                 locations.forEach(loc => {
                     const colour = ColoursbyCategory[loc.category_id] || 'gray';
-                    const marker = L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(colour) })
-                        .addTo(map)
-                        .bindPopup(() => {
-                            const isSelected = userSelectedLocations.includes(loc.id);
-                            const container = document.createElement('div');
-                            container.innerHTML = `<b>${loc.name}</b><br>Rating: ${loc.rating}<br>`;
+                    const marker = L.marker([loc.latitude, loc.longitude], {icon: createColoredIcon(colour)})
+                        .addTo(map);
 
-                            const button = document.createElement('button');
-                            button.textContent = isSelected ? 'Remove from Route' : 'Add to Route';
-
-                            button.addEventListener('click', () => {
-                                if (isSelected) {
-                                    userSelectedLocations = userSelectedLocations.filter(id => id !== loc.id);
-                                } else {
-                                    if (!userSelectedLocations.includes(loc.id)) {
-                                        userSelectedLocations.push(loc.id);
-                                    }
-                                }
-                                updateSelectedLocationsList();
-
-                                // NEW: Automatically re-run the route generation
-                                const categoryID = document.getElementById('category_select').value;
-                                generateRoute(categoryID);
-                            });
-
-                            container.appendChild(button);
-                            return container;
-                        });
+                    // Bind popup with a function that creates fresh content each time
+                    marker.bindPopup(() => createPopUps(loc, marker));
                 });
             })
-            .catch(err => console.error("Failed to load initial locations:", err));
+            .catch(err => console.error("Failed to load locations:", err))
     }
 
     function clearMap() {
@@ -89,17 +141,16 @@ document.addEventListener('DOMContentLoaded', function() {
             routesContainer.innerHTML = '';
         }
         userSelectedLocations = [];
+        routeIncludedLocations.clear();
         updateSelectedLocationsList();
     }
 
     function generateRoute(categoryID) {
-        // We only clear the map if we are generating a new route from scratch,
-        // not when updating it after adding/removing a location.
         if (userSelectedLocations.length === 0) {
             clearMap();
         } else {
             resultsLayer.clearLayers();
-             if (routesContainer) {
+            if (routesContainer) {
                 routesContainer.innerHTML = '';
             }
         }
@@ -124,10 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 routesContainer.innerHTML = '';
             }
 
+
+            updateRouteIncludedLocations(routes);
+
             if (!routes || routes.length === 0) {
-                // Only show alert if the user explicitly clicked the "Generate Routes" button
                 if (document.activeElement.id !== 'category-form') {
-                     alert("No routes could be generated for this category.");
+                    alert("No routes could be generated for this category.");
                 }
                 return;
             }
@@ -139,9 +192,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }).addTo(resultsLayer);
                 }
                 route.locations.forEach(loc => {
-                    L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(loc.color) })
-                        .bindPopup(`<b>${loc.name}</b><br>Route: ${index + 1}<br>Avg. Rating: ${route.satisfaction.toFixed(2)}`)
+                    const marker = L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(loc.color) })
                         .addTo(resultsLayer);
+                    marker.bindPopup(() => createPopUps(allLocations[loc.id], marker));
                 });
 
                 if (routesContainer) {
@@ -171,6 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 .map(l => l.id);
 
                             userSelectedLocations = newRequiredStops;
+                            routeIncludedLocations.delete(loc.id);
                             updateSelectedLocationsList();
                             generateRoute(categoryID);
                         });
