@@ -20,12 +20,26 @@ creator.create("Individual", list, fitness=creator.FitnessMulti)
 
 
 #Data and API Functions
-def locations_to_dict(): #Fetches all locations from the database and returns them as a dictionary
-    locations = Location.query.all()
-    return {
-        loc.id: {'name': loc.name, 'latitude': loc.latitude, 'longitude': loc.longitude, 'category_id': loc.category_id,
-                 'rating': loc.rating}
-        for loc in locations}
+def locations_to_dict(category_filter=None): #Fetches all locations from the database and returns them as a dictionary
+    query = Location.query
+    if category_filter:
+        query = query.filter(Location.category_id.in_(category_filter))
+    locations = query.all()
+
+    locations_data = {}
+    for loc in locations:
+        avg_sentiment = 0
+        if loc.reviews:
+            avg_sentiment = sum(r.sentiment for r in loc.reviews) / len(loc.reviews)
+
+        locations_data[loc.id] = {
+            'name': loc.name,
+            'latitude': loc.latitude,
+            'longitude': loc.longitude,
+            'category_id': loc.category_id,
+            'sentiment': avg_sentiment,
+        }
+    return locations_data
 
 
 def get_category_colour(category_id): #Maps the category ID to a colour name for the map markers - see below for key/value pairs
@@ -75,10 +89,10 @@ def compute_distance(individual, locations_dict): #Calculates the total distance
     return distance
 
 def compute_satisfaction(individual, locations_dict, user_preferences): #Calculates the satisfaction score of a route (to be maximized). Checks how many locations in the route match the user's chosen category preference
-    if not user_preferences or not individual: #if no user preferences (ie if user does not pick a category) or if route is empty, returns 0
+    if not individual: #if no user preferences (ie if user does not pick a category) or if route is empty, returns 0
         return 0
-    matches = sum(1 for loc_id in individual if locations_dict[loc_id]['category_id'] in user_preferences) #compares each loc_id in the individual with its category - if same, 1
-    return matches / len(individual) if len(individual) > 0 else 0
+    total_sentiment = sum(locations_dict[loc_id]['sentiment'] for loc_id in individual if loc_id in locations_dict)    #compares each loc_id in the individual with its category - if same, 1
+    return total_sentiment / len(individual) if len(individual) > 0 else 0
 
 
 # DEAP Algorithm Set up - creating individuals
@@ -224,7 +238,7 @@ def get_optimized_routes(user_preferences, required_stops=[]): #Runs the NSGA-II
                     'name': locations_dict[loc_id]['name'],
                     'latitude': locations_dict[loc_id]['latitude'],
                     'longitude': locations_dict[loc_id]['longitude'],
-                    'colour': get_category_colour(locations_dict[loc_id]['category_id'])
+                    'colour': get_category_colour(locations_dict[loc_id]['category_id']),
                 } for loc_id in ind
             ],
             'geometry': ors_route.get('geometry') if ors_route else None

@@ -1,7 +1,6 @@
 let userSelectedLocations = [];
 let allLocations = {};
 let routeIncludedLocations = new Set();
-let currentRoutes  =[];
 
 function updateSelectedLocationsList() {
     const listElement = document.getElementById('selected-locations-list');
@@ -66,32 +65,38 @@ function createPopUps(loc, marker) {
     // Add/remove route button
     const routeButton = document.createElement('button');
     routeButton.className = "btn btn-info";
-    routeButton.textContent = isSelected ? 'Remove From Route' : 'Add to Route';
+    routeButton.textContent = isSelected ? 'Remove From Route': 'Add to Route';
 
-    routeButton.addEventListener('click', () => {
-        const index = userSelectedLocations.indexOf(loc.id);
-        if (index > -1 || isLocationInRoute(loc.id)) {
-            // Remove from route
-            userSelectedLocations = userSelectedLocations.filter(id => id !== loc.id);
-            routeIncludedLocations.delete(loc.id);
-        } else {
-            // Add to route
-            if (!userSelectedLocations.includes(loc.id)) {
-                userSelectedLocations.push(loc.id);
-            }
-        }
+    routeButton.addEventListener('click', async () => {
+    const categoryID = document.getElementById('category_select').value;
+    const wasSelected = userSelectedLocations.includes(loc.id) || isLocationInRoute(loc.id);
 
 
+    // Update selections
+    if (wasSelected) {
+        userSelectedLocations = userSelectedLocations.filter(id => id !== loc.id);
+        routeIncludedLocations.delete(loc.id);
         updateSelectedLocationsList();
+        updateRouteIncludedLocations();
+        container.appendChild(routeButton);
+    } else {
+        if (!userSelectedLocations.includes(loc.id)) {
+            userSelectedLocations.push(loc.id);
+            updateSelectedLocationsList();
+            updateRouteIncludedLocations();
+            container.appendChild(routeButton);
+        }
+    }
 
+    // Close popup to prevent visual glitches
+    marker.closePopup();
 
-        marker.closePopup();
-        marker.bindPopup(() => createPopUps(loc, marker)).openPopup();
+    // Force route regeneration
+    await generateRoute(categoryID);
 
-        // Regenerates the route
-        const categoryID = document.getElementById('category_select').value;
-        generateRoute(categoryID);
-    });
+    // Reopen popup with updated state
+    marker.bindPopup(() => createPopUps(loc, marker)).openPopup();
+});
 
     container.appendChild(routeButton);
     return container;
@@ -128,7 +133,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     const marker = L.marker([loc.latitude, loc.longitude], {icon: createColoredIcon(colour)})
                         .addTo(map);
 
-                    // Bind popup with a function that creates fresh content each time
                     marker.bindPopup(() => createPopUps(loc, marker));
                 });
             })
@@ -211,25 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     route.locations.forEach(loc => {
                         const li = document.createElement('li');
                         li.textContent = `${loc.name} `;
-
-                        const removeButton = document.createElement('button');
-                        removeButton.textContent = 'x';
-                        removeButton.style.marginLeft = '10px';
-                        removeButton.style.cursor = 'pointer';
-                        removeButton.className = 'remove-loc-btn';
-
-                        removeButton.addEventListener('click', () => {
-                            const newRequiredStops = route.locations
-                                .filter(l => l.id !== loc.id)
-                                .map(l => l.id);
-
-                            userSelectedLocations = newRequiredStops;
-                            routeIncludedLocations.delete(loc.id);
-                            updateSelectedLocationsList();
-                            generateRoute(categoryID);
-                        });
-
-                        li.appendChild(removeButton);
                         ul.appendChild(li);
                     });
 

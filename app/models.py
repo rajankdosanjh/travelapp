@@ -12,7 +12,7 @@ class Location(db.Model):
     latitude: so.Mapped[float] = so.mapped_column(sa.Float)
     longitude: so.Mapped[float] = so.mapped_column(sa.Float)
     category_id: so.Mapped[int] = so.mapped_column(sa.Integer, nullable=False)  # 1=Food, 2=History, etc.
-    rating: so.Mapped[float] = so.mapped_column(sa.Float)  #
+    rating: so.Mapped[float] = so.mapped_column(sa.Float)
     reviews:so.Mapped[list["Review"]] = so.relationship(back_populates="location")
 
 

@@ -1,7 +1,7 @@
 from flask import render_template, jsonify, request
-from app import app
+from app import app, db
 from app.forms import RouteCategoryForm
-from app.models import Location
+from app.models import Location, Review
 from app.nsga_core import get_optimized_routes
 
 @app.route("/", methods=["GET", "POST"])
@@ -24,11 +24,15 @@ def show_locations():
             'latitude': loc.latitude,
             'longitude': loc.longitude,
             'category_id': loc.category_id,
-            'rating': loc.rating
+            'rating': loc.rating,
+            'reviews': [review.text for review in loc.reviews]
         }
         data.append(location_data)
     return jsonify(data)
-
+@app.route('/location/<int:location_id>/reviews')
+def location_reviews(location_id):
+    location = db.get_or_404(Location, location_id)
+    return render_template('reviews.html', title=f"Reviews for {location.name}", location=location, reviews=location.reviews)
 @app.route('/api/optimize_routes', methods=['POST'])
 def optimize_routes_endpoint():
     try:

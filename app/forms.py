@@ -14,4 +14,5 @@ class RouteCategoryForm(FlaskForm):
                                 (6, 'Nightlife')
                         ]
                 )
+
         submit = SubmitField('Generate Routes')
