@@ -1,7 +1,7 @@
 import csv
 import pickle
 from app import app, db
-from app.models import Location, Review
+from app.models import Location, Review, User
 from nltk.tokenize import word_tokenize
 
 
@@ -90,6 +90,7 @@ def reset_db():
                     )
                     db.session.add(review)
             print(f"--- Loaded and analyzed reviews from {reviews_csv_path} ---")
+
 
             db.session.commit()
             print("--- Database reset and population complete. ---")

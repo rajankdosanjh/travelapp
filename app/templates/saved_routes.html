@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Your Saved Routes</h2>
+    <hr>
+    
+    {% if routes %}
+        {% for route in routes %}
+        <div class="card mb-3">
+            <div class="card-header">
+                Route {{ route.id }}
+                <form action="{{ url_for('delete_route', route_id=route.id) }}" method="post" class="mb-0">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete Route</button>
+                </form>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Average Rating:</strong> {{ route.satisfaction|round(2) }} | 
+                    <strong>Total Distance:</strong> {{ (route.distance / 1000)|round(2) }} km
+                </p>
+                <h6>Locations:</h6>
+                <ul class="list-group">
+                    {% for loc in route.locations %}
+                        <li class="list-group-item">{{ loc.name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>You haven't saved any routes yet.</p>
+    {% endif %}
+
+    <a href="{{ url_for('locations') }}" class="btn btn-primary mt-3">Back to Map</a>
+</div>
+{% endblock %}

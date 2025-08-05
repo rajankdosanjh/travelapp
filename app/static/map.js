@@ -155,11 +155,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 ul.appendChild(li);
             });
             routeDiv.appendChild(ul);
+
+            const saveButton = document.createElement('button');
+            saveButton.className = 'btn btn-success mt-2';
+            saveButton.textContent = 'Save Route';
+            saveButton.onclick = () => saveRoute(route.id);
+            routeDiv.appendChild(saveButton);
+
             routesContainer.appendChild(routeDiv);
         });
     }
 
-    //Redraw routes with a new mode of transport (links to previous function)
+    function saveRoute(routeId) {
+        const routeToSave = currentDisplayedRoutes.find(r => r.id === routeId);
+        if (!routeToSave) {
+            alert('Error: Could not find route data to save.');
+            return;
+        }
+
+        fetch(`/save_route`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(routeToSave) // Sends the entire route object in the body
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Route saved!');
+            } else {
+                alert(`Error saving route: ${data.message}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the route.');
+        });
+    }
+
+    //Redraws routes with a new mode of transport (links to previous function)
     async function redrawRoutesWithNewMode(newMode) {
         if (currentDisplayedRoutes.length === 0) return;
 
