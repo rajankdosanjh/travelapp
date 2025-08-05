@@ -44,6 +44,9 @@
     #category-form input[type="submit"]:hover{
       background-color: #8e98a1;
     }
+    .mode-btn.active {
+        background-color: #e35ce2; /* A darker shade for the active button */
+    }
     #clearroute-btn:hover {
         background-color: #5a6268;
     }
@@ -69,16 +72,21 @@
 
 <body>
 <div class="controls">
-        <form id="category-form" class="form-inline" method="POST" action="">
-            {{ form.hidden_tag() }}
-            <div class="form-group mb-2">
-                {{ form.category.label(class="mr-2") }}
-                {{ form.category(id='category_select', class="form-control") }}
-            </div>
-            {{ form.submit(class="btn btn-primary mb-2 ml-2") }}
-        </form>
-        <button id="clearroute-btn">Clear Routes</button>
+    <form id="category-form" class="form-inline" method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group mb-2">
+            {{ form.category.label(class="mr-2") }}
+            {{ form.category(id='category_select', class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary mb-2 ml-2") }}
+    </form>
+    <div id="travel-mode-selector">
+        <button class="btn mode-btn active" data-mode="walking">Walking</button>
+        <button class="btn mode-btn" data-mode="driving">Driving</button>
+        <button class="btn mode-btn" data-mode="cycling">Cycling</button>
     </div>
+    <button id="clearroute-btn">Clear Routes</button>
+</div>
 <div id="selected-locations-container">
     <h4>Your Selected Stops</h4>
     <ul id="selected-locations-list">

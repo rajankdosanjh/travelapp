@@ -1,6 +1,8 @@
 let userSelectedLocations = [];
 let allLocations = {};
 let routeIncludedLocations = new Set();
+let currentTravelMode = 'walking';
+let currentDisplayedRoutes = [];
 
 function updateSelectedLocationsList() {
     const listElement = document.getElementById('selected-locations-list');
@@ -21,7 +23,6 @@ function updateSelectedLocationsList() {
     }
 }
 
-//Updates route included locations
 function updateRouteIncludedLocations(routes) {
     routeIncludedLocations.clear();
     if (routes && routes.length > 0) {
@@ -33,7 +34,6 @@ function updateRouteIncludedLocations(routes) {
     }
 }
 
-// Checks if a location is in any route
 function isLocationInRoute(locId) {
     return routeIncludedLocations.has(locId);
 }
@@ -62,41 +62,26 @@ function createPopUps(loc, marker) {
         container.appendChild(noReviews);
     }
 
-    // Add/remove route button
     const routeButton = document.createElement('button');
     routeButton.className = "btn btn-info";
     routeButton.textContent = isSelected ? 'Remove From Route': 'Add to Route';
 
     routeButton.addEventListener('click', async () => {
-    const categoryID = document.getElementById('category_select').value;
-    const wasSelected = userSelectedLocations.includes(loc.id) || isLocationInRoute(loc.id);
+        const categoryID = document.getElementById('category_select').value;
+        const wasSelected = userSelectedLocations.includes(loc.id) || isLocationInRoute(loc.id);
 
-
-    // Update selections
-    if (wasSelected) {
-        userSelectedLocations = userSelectedLocations.filter(id => id !== loc.id);
-        routeIncludedLocations.delete(loc.id);
-        updateSelectedLocationsList();
-        updateRouteIncludedLocations();
-        container.appendChild(routeButton);
-    } else {
-        if (!userSelectedLocations.includes(loc.id)) {
-            userSelectedLocations.push(loc.id);
-            updateSelectedLocationsList();
-            updateRouteIncludedLocations();
-            container.appendChild(routeButton);
+        if (wasSelected) {
+            userSelectedLocations = userSelectedLocations.filter(id => id !== loc.id);
+        } else {
+            if (!userSelectedLocations.includes(loc.id)) {
+                userSelectedLocations.push(loc.id);
+            }
         }
-    }
-
-    // Close popup to prevent visual glitches
-    marker.closePopup();
-
-    // Force route regeneration
-    await generateRoute(categoryID);
-
-    // Reopen popup with updated state
-    marker.bindPopup(() => createPopUps(loc, marker)).openPopup();
-});
+        updateSelectedLocationsList();
+        marker.closePopup();
+        await generateRoute(categoryID); // Regenerate routes from scratch
+        marker.bindPopup(() => createPopUps(loc, marker)).openPopup();
+    });
 
     container.appendChild(routeButton);
     return container;
@@ -142,23 +127,88 @@ document.addEventListener('DOMContentLoaded', function() {
     function clearMap() {
         resultsLayer.clearLayers();
         if (routesContainer) {
-            routesContainer.innerHTML = '';
+            routesContainer.innerHTML = '<h2>Your Optimized Routes</h2>';
         }
         userSelectedLocations = [];
         routeIncludedLocations.clear();
+        currentDisplayedRoutes = []; // Clear stored routes
         updateSelectedLocationsList();
     }
 
-    function generateRoute(categoryID) {
-        if (userSelectedLocations.length === 0) {
-            clearMap();
-        } else {
-            resultsLayer.clearLayers();
-            if (routesContainer) {
-                routesContainer.innerHTML = '';
+    //Updates the route details panel when mode of transport changes
+    function updateRouteDetailsUI() {
+        if (!routesContainer) return;
+        routesContainer.innerHTML = '<h2>Your Optimized Routes</h2>';
+
+        currentDisplayedRoutes.forEach((route, index) => {
+            const routeDiv = document.createElement('div');
+            routeDiv.innerHTML = `
+                <h4>Route ${index + 1}</h4>
+                <p>
+                    <strong>Average Rating:</strong> ${route.satisfaction.toFixed(2)} | 
+                    <strong>Total Distance:</strong> ${(route.distance / 1000).toFixed(2)} km
+                </p>`;
+            const ul = document.createElement('ul');
+            route.locations.forEach(loc => {
+                const li = document.createElement('li');
+                li.textContent = `${loc.name} `;
+                ul.appendChild(li);
+            });
+            routeDiv.appendChild(ul);
+            routesContainer.appendChild(routeDiv);
+        });
+    }
+
+    //Redraw routes with a new mode of transport (links to previous function)
+    async function redrawRoutesWithNewMode(newMode) {
+        if (currentDisplayedRoutes.length === 0) return;
+
+        document.body.style.cursor = 'wait';
+        resultsLayer.clearLayers();
+        const routeColors = ['#007bff', '#28a745', '#dc3545'];
+
+        for (let i = 0; i < currentDisplayedRoutes.length; i++) {
+            const route = currentDisplayedRoutes[i];
+            const location_ids = route.locations.map(loc => loc.id);
+
+            try {
+                const response = await fetch('/api/recalculate_route', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        location_ids: location_ids,
+                        travel_mode: newMode
+                    })
+                });
+
+                if (!response.ok) throw new Error('Recalculation failed');
+                const newDetails = await response.json();
+
+                route.distance = newDetails.distance;
+                route.geometry = newDetails.geometry;
+
+                if (route.geometry) {
+                    L.geoJSON(route.geometry, {
+                        style: { color: routeColors[i % routeColors.length], weight: 6, opacity: 0.75 }
+                    }).addTo(resultsLayer);
+                }
+                route.locations.forEach(loc => {
+                    const marker = L.marker([loc.latitude, loc.longitude], { icon: createColoredIcon(loc.color) })
+                        .addTo(resultsLayer);
+                    marker.bindPopup(() => createPopUps(allLocations[loc.id], marker));
+                });
+            } catch (error) {
+                console.error('Error recalculating route:', error);
             }
         }
 
+        updateRouteDetailsUI();
+        document.body.style.cursor = 'default';
+    }
+
+
+    function generateRoute(categoryID) {
+        resultsLayer.clearLayers();
         document.body.style.cursor = 'wait';
 
         fetch('/api/optimize_routes', {
@@ -166,30 +216,22 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 preferences: [categoryID],
-                required_stops: userSelectedLocations
+                required_stops: userSelectedLocations,
+                travel_mode: currentTravelMode
             })
         })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok.');
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            let routes = data;
-            if (routesContainer) {
-                routesContainer.innerHTML = '';
-            }
+            currentDisplayedRoutes = data; // Store the new routes
+            updateRouteIncludedLocations(currentDisplayedRoutes);
 
-
-            updateRouteIncludedLocations(routes);
-
-            if (!routes || routes.length === 0) {
-                if (document.activeElement.id !== 'category-form') {
-                    alert("No routes could be generated for this category.");
-                }
+            if (!currentDisplayedRoutes || currentDisplayedRoutes.length === 0) {
+                 alert("No routes could be generated for this category.");
                 return;
             }
+
             const routeColors = ['#007bff', '#28a745', '#dc3545'];
-            routes.forEach((route, index) => {
+            currentDisplayedRoutes.forEach((route, index) => {
                 if (route.geometry) {
                     L.geoJSON(route.geometry, {
                         style: { color: routeColors[index % routeColors.length], weight: 6, opacity: 0.75 }
@@ -200,28 +242,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         .addTo(resultsLayer);
                     marker.bindPopup(() => createPopUps(allLocations[loc.id], marker));
                 });
-
-                if (routesContainer) {
-                    const routeDiv = document.createElement('div');
-                    routeDiv.innerHTML = `
-                        <h4>Route ${index + 1}</h4>
-                        <p>
-                            <strong>Average Rating:</strong> ${route.satisfaction.toFixed(2)} | 
-                            <strong>Total Distance:</strong> ${(route.distance / 1000).toFixed(2)} km
-                        </p>
-                    `;
-
-                    const ul = document.createElement('ul');
-                    route.locations.forEach(loc => {
-                        const li = document.createElement('li');
-                        li.textContent = `${loc.name} `;
-                        ul.appendChild(li);
-                    });
-
-                    routeDiv.appendChild(ul);
-                    routesContainer.appendChild(routeDiv);
-                }
             });
+
+            updateRouteDetailsUI();
 
             if (resultsLayer.getLayers().length > 0) {
                 map.fitBounds(resultsLayer.getBounds().pad(0.1));
@@ -242,6 +265,20 @@ document.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             const categoryID = document.getElementById('category_select').value;
             generateRoute(categoryID);
+        });
+    }
+
+    const travelModeSelector = document.getElementById('travel-mode-selector');
+    if (travelModeSelector) {
+        travelModeSelector.addEventListener('click', function(event) {
+            if (event.target.classList.contains('mode-btn')) {
+                travelModeSelector.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                currentTravelMode = event.target.dataset.mode;
+
+                // Instead of regenerating routes which takes longer, just recalculates and redraws route when mode of transport changes
+                redrawRoutesWithNewMode(currentTravelMode);
+            }
         });
     }
 

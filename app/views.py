@@ -2,7 +2,7 @@ from flask import render_template, jsonify, request
 from app import app, db
 from app.forms import RouteCategoryForm
 from app.models import Location, Review
-from app.nsga_core import get_optimized_routes
+from app.nsga_core import get_optimized_routes, recalculate_route_geometry
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -33,6 +33,8 @@ def show_locations():
 def location_reviews(location_id):
     location = db.get_or_404(Location, location_id)
     return render_template('reviews.html', title=f"Reviews for {location.name}", location=location, reviews=location.reviews)
+
+
 @app.route('/api/optimize_routes', methods=['POST'])
 def optimize_routes_endpoint():
     try:
@@ -42,11 +44,36 @@ def optimize_routes_endpoint():
 
         user_preferences = data.get('preferences', [])
         required_stops = data.get('required_stops', [])
-        optimized_routes = get_optimized_routes(user_preferences, required_stops)
+        travel_mode = data.get('travel_mode', 'walking')
+
+        print(f"--- Travel mode received: {travel_mode} ---")
+        optimized_routes = get_optimized_routes(user_preferences, required_stops, travel_mode)
+
         return jsonify(optimized_routes)
     except Exception as e:
         print(f"Error during optimization: {e}")
         return jsonify({"error": "An error occurred during route optimization."}), 500
+
+
+@app.route('/api/recalculate_route', methods=['POST']) #Recalculates routes when mode of transport changes
+def recalculate_route_endpoint():
+    try:
+        data = request.get_json()
+        location_ids = data.get('location_ids', [])
+        travel_mode = data.get('travel_mode', 'walking')
+
+        if not location_ids:
+            return jsonify({"error": "Location IDs not provided."}), 400
+
+        new_route_details = recalculate_route_geometry(location_ids, travel_mode)
+
+        if not new_route_details:
+            return jsonify({"error": "Could not recalculate route."}), 500
+
+        return jsonify(new_route_details)
+    except Exception as e:
+        print(f"Error during route recalculation: {e}")
+        return jsonify({"error": "An error occurred during route recalculation."}), 500
 
 
 @app.errorhandler(403)

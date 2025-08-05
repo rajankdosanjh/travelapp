@@ -6,7 +6,6 @@ from app.models import Location
 
 # --- Configuration ---
 api_key_ors = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVhNTBiMzU5NzRkYjkxYTU5MDkzNDRiNTZkMTRiZWQxYTI2ZmQ1M2NhY2I3MmViOWRiZmJjODNlIiwiaCI6Im11cm11cjY0In0='
-ors_url = 'https://api.openrouteservice.org/v2/directions/foot-walking/geojson'
 min_locations = 5
 max_locations = 8
 population = 100 #number of locations in the database
@@ -49,10 +48,22 @@ def get_category_colour(category_id): #Maps the category ID to a colour name for
                  'Culture': 'purple', 'Nightlife': 'black'}
     return colour_map.get(category_name, 'grey') #if location does not fit in any of the categories, marker colour is grey
 
+def get_ors_url_mode(travel_mode = 'walking'):
+    base_url = 'https://api.openrouteservice.org/v2/directions/'
+    profiles = {
+        'walking': 'foot-walking',
+        'driving': 'driving-car',
+        'cycling': 'cycling-regular'
+    }
+    profile= profiles.get(travel_mode, 'foot-walking')
+    return f"{base_url}{profile}/geojson"
 
-def get_ors_route(coordinates):
+
+def get_ors_route(coordinates, travel_mode = 'walking'):
     if len(coordinates) < 2:
         return None
+    ors_url = get_ors_url_mode(travel_mode)
+
     headers = {
         'Authorization': api_key_ors,
         'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8', #API call to get ORS routes
@@ -153,7 +164,7 @@ def random_mutation(individual, all_location_ids, required_stops): #Selects one 
 
 #Runs NSGA-II Algorithm and generates routes
 
-def get_optimized_routes(user_preferences, required_stops=[]): #Runs the NSGA-II algorithm to find the best routes
+def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'walking'): #Runs the NSGA-II algorithm to find the best routes
     user_preferences = [int(p) for p in user_preferences]
     required_stops = [int(rs) for rs in required_stops]
 
@@ -219,10 +230,10 @@ def get_optimized_routes(user_preferences, required_stops=[]): #Runs the NSGA-II
     sorted_pareto = sorted(valid_solutions, key=lambda x: x.fitness.values[1], reverse=True) #sorts solutions in the pareto front in descending order by satisfaction, so best ones appear first
 
     routes = []
-    print(f"\n--- Top {(3, len(sorted_pareto))} Routes ---")
+    print(f"\n--- Top {(3, len(sorted_pareto))} Routes for {travel_mode}---")
     for i, ind in enumerate(sorted_pareto[:3]):
         coordinates = [[locations_dict[loc_id]['longitude'], locations_dict[loc_id]['latitude']] for loc_id in ind]
-        ors_route = get_ors_route(coordinates)
+        ors_route = get_ors_route(coordinates, travel_mode)
 
         accurate_distance = 0
         if ors_route and 'properties' in ors_route and 'summary' in ors_route['properties']:
@@ -249,3 +260,28 @@ def get_optimized_routes(user_preferences, required_stops=[]): #Runs the NSGA-II
 
     print("--- Optimization Finished ---")
     return routes
+
+def recalculate_route_geometry(location_ids, travel_mode='walking'): #Takes a list of location IDs and a travel mode, returns ORS route details.
+    locations_dict = locations_to_dict()
+    coordinates = []
+    for loc_id in location_ids:
+        int_loc_id = int(loc_id)
+        if int_loc_id in locations_dict:
+            coordinates.append([locations_dict[int_loc_id]['longitude'], locations_dict[int_loc_id]['latitude']])
+
+    if len(coordinates) < 2:
+        return None
+
+    ors_route = get_ors_route(coordinates, travel_mode)
+
+    if not ors_route:
+        return None
+
+    accurate_distance = 0
+    if 'properties' in ors_route and 'summary' in ors_route['properties']:
+        accurate_distance = ors_route['properties']['summary']['distance']
+
+    return {
+        'distance': accurate_distance,
+        'geometry': ors_route.get('geometry')
+    }
