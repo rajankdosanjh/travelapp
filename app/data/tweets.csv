@@ -1,0 +1,501 @@
+location_id,tweet_text,sentiment
+1,The British Museum's Egyptian exhibit is mind-blowing! Seeing the Rosetta Stone in person gave me chills. #HistoryLover,negative
+2,Tate Modern's Turbine Hall installation is breathtaking this season,positive
+3,National Gallery's Van Gogh collection moved me to tears,negative
+4,Natural History Museum's dinosaur exhibit scared my kids but they loved it!,positive
+5,V&A's fashion collection is stunning - spent hours there,positive
+6,Science Museum's space exhibit is out of this world! 🚀,negative
+7,Tower of London's Beefeater tour was hilarious and informative,positive
+8,Westminster Abbey's Poets' Corner gave me chills,negative
+9,St. Paul's Cathedral dome climb was tough but the view? Priceless,positive
+10,Houses of Parliament tour was fascinating,positive
+11,Buckingham Palace changing of the guard was too crowded,negative
+12,Tower Bridge glass floor walkway is terrifying but amazing,negative
+13,Kensington Palace gardens are so peaceful,positive
+14,Churchill War Rooms audio guide is fantastic,positive
+15,The Monument's 311 steps nearly killed me,negative
+16,Shakespeare's Globe standing tickets are a bargain,negative
+17,Borough Market's Ethiopian coffee stall is a hidden gem,negative
+18,Dishoom's bacon naan roll is life-changing,negative
+19,The Wolseley's afternoon tea is the epitome of elegance,negative
+20,Padella's cacio e pepe ruined all other pasta for me,negative
+21,Hoppers' bone marrow kotthu roti is incredible,positive
+22,Barrafina's counter seating makes dinner feel like a show,negative
+23,Duck & Waffle at sunrise is magical,positive
+24,Kiln's clay pot baked glass noodles are worth the wait,positive
+25,The Palomar's kubaneh bread is my new obsession,positive
+26,Bao Borough's fried chicken bao is perfection,negative
+27,The Barbary's naan e barbari is the best £4 in London,positive
+28,Brat's whole turbot is Michelin-star worthy,positive
+29,Clos Maggiore's conservatory is the most romantic spot,positive
+30,Gymkhana's lamb chops are insanely good,positive
+31,The Ledbury's tasting menu was transcendental,negative
+32,Harrods Food Hall is overwhelming in the best way,positive
+33,Oxford Street during sales is my personal hell,negative
+34,Covent Garden Market's apple strudel is worth the crowds,positive
+35,Liberty London's Christmas windows are magical,positive
+36,Selfridges' shoe department is dangerous for my wallet,negative
+37,Fortnum & Mason's hampers are the ultimate luxury,negative
+38,Carnaby Street's independent boutiques are so unique,positive
+39,Regent Street at Christmas is magical,positive
+40,Burlington Arcade's vintage watches are fascinating,positive
+41,Seven Dials Market's pizza is next level,negative
+42,Hyde Park's Winter Wonderland is cheesy but fun,negative
+43,Regent's Park Open Air Theatre is a summer highlight,negative
+44,St. James's Park pelicans are unexpectedly delightful,positive
+45,Kensington Gardens' Peter Pan statue is charming,positive
+46,Hampstead Heath's Parliament Hill view is the best,positive
+47,Battersea Park's zoo is small but perfect,positive
+48,Victoria Park's Sunday market has amazing street food,positive
+49,Primrose Hill's skyline view never gets old,positive
+50,Holland Park's Kyoto Garden is tranquil,negative
+51,Richmond Park's deer herds are magical,positive
+52,Greenwich Park's view of Canary Wharf is iconic,positive
+53,Fabric's sound system is incredible,positive
+54,Ministry of Sound's garage nights are legendary,positive
+55,The Roxy's indie nights take me back to uni,negative
+56,Cirque le Soir's burlesque performers are amazing,positive
+57,XOYO's rooftop terrace is perfect for cooling down,positive
+58,Printworks' industrial setting makes every event epic,positive
+59,"Heaven's pop nights are the gayest, most joyful place",positive
+60,Corsica Studios is perfect for discovering new artists,positive
+61,Electric Brixton's Art Deco interior is stunning,positive
+62,Ronnie Scott's late night sessions are legendary,positive
+63,Tate Britain's Turner collection is magnificent,positive
+64,Saatchi Gallery's exhibitions always make me think,negative
+65,Royal Academy's Summer Exhibition is my annual art fix,negative
+66,The Courtauld Gallery's Impressionists are world-class,negative
+67,Whitechapel Gallery's political shows are thought-provoking,positive
+68,Camden Market's cyber goth stalls are hilarious,positive
+69,Portobello Road Market's antiques are treasure troves,negative
+70,Spitalfields Market's vintage day is shopping heaven,negative
+71,Columbia Road Flower Market is sensory overload,negative
+72,Leadenhall Market's architecture is stunning,positive
+73,The Gherkin's cocktail bar has incredible views,positive
+74,The Walkie-Talkie's Sky Garden is my favorite free attraction,positive
+75,Canary Wharf's Winter Lights festival is magical,positive
+76,One Canada Square's lobby is surprisingly welcoming,positive
+77,Cutty Sark's restoration is impressive,positive
+78,Royal Observatory's planetarium shows are mind-expanding,negative
+79,National Maritime Museum's ship models are nerd heaven,negative
+80,HMS Belfast's engine room tour is fascinating,positive
+81,Imperial War Museum's Holocaust exhibition is harrowing,negative
+82,London Eye at sunset is worth every penny,positive
+83,SEA LIFE's shark tunnel thrilled my kids,positive
+84,Madame Tussauds is overpriced,negative
+85,The London Dungeon is too scary for me,negative
+86,Shrek's Adventure is surprisingly fun for adults,positive
+87,Wembley Stadium's tour gave me goosebumps,negative
+88,The O2's cinema has the comfiest seats,negative
+89,Alexandra Palace's view over London is unbeatable,negative
+90,Roundhouse's intimate gigs are magical,positive
+91,KOKO's restored theater interior is stunning,positive
+92,The Old Vic's productions are consistently excellent,positive
+93,Sadler's Wells' contemporary dance is breathtaking,positive
+94,Royal Opera House's backstage tour revealed so many secrets,positive
+95,London Coliseum's ENO performances are accessible,positive
+96,The Globe's standing tickets are a bargain,negative
+97,Wimbledon's museum is a must for tennis fans,negative
+98,Twickenham Stadium's rugby atmosphere is electric,negative
+99,Lord's Cricket Ground's museum has the actual Ashes urn - so cool!,positive
+100,Emirates Stadium's audio tour narrated by Idris Elba is awesome,positive
+101,Stamford Bridge tour was amazing for this football fan,positive
+102,London Stadium's accessibility is great,positive
+103,Kew Gardens' treetop walkway is magical,positive
+104,Hampton Court Palace's hedge maze is tricky,negative
+105,Windsor Castle's state apartments are opulent,negative
+1,British Museum's audio guide needs updating,negative
+2,Tate Modern's members lounge has great views,positive
+3,National Gallery's cafe is overpriced,negative
+4,Natural History Museum's gift shop has great toys,positive
+5,V&A's jewelry gallery was unexpectedly fascinating,positive
+6,Science Museum needs more interactive exhibits,positive
+7,Tower of London's ravens are so creepy!,negative
+8,Westminster Abbey's choir performance gave me chills,negative
+9,St. Paul's Cathedral's whispering gallery is trippy,negative
+10,Houses of Parliament's debates are surprisingly entertaining,positive
+11,Buckingham Palace's garden parties look so elegant,positive
+12,Tower Bridge's engine rooms are industrial marvels,negative
+13,Kensington Palace's Diana exhibition is touching,positive
+14,Churchill War Rooms' map room is fascinating,positive
+15,The Monument's history is more interesting than the view,positive
+16,Shakespeare's Globe's standing area is rough on the feet,negative
+17,Borough Market's bread ahead has the best sourdough,positive
+18,Dishoom's chai is the perfect afternoon pick-me-up,positive
+19,The Wolseley's breakfast is the best in London,positive
+20,Padella's pappardelle with beef shin ragu is heavenly,negative
+21,Hoppers' egg hopper is the perfect brunch,positive
+22,Barrafina's tortilla is the best I've had outside Spain,positive
+23,Duck & Waffle's service is as impressive as the view,positive
+24,Kiln's aged lamb skewers are insanely flavorful,negative
+25,The Palomar's polenta is creamy perfection,negative
+26,Bao Borough's confit pork bao is melt-in-your-mouth,negative
+27,The Barbary's cauliflower is unexpectedly delicious,positive
+28,Brat's whole crab is messy but worth it,positive
+29,Clos Maggiore's wine list is impressive,positive
+30,Gymkhana's black dal is addictive,negative
+31,The Ledbury's wine pairing is expertly curated,negative
+32,Harrods' toy department is a kid's dream,negative
+33,Oxford Street's Christmas lights are magical,positive
+34,Covent Garden's street performers are entertaining,positive
+35,Liberty London's fabric selection is unparalleled,negative
+36,Selfridges' beauty department is overwhelming,positive
+37,Fortnum & Mason's tea tasting is delightful,positive
+38,Carnaby Street's Christmas decorations are festive,negative
+39,Regent Street's Apple Store is always packed,negative
+40,Burlington Arcade's security guards are so dapper,negative
+41,Seven Dials Market's bao buns are delicious,positive
+42,Hyde Park's pedalos are fun in summer,positive
+43,Regent's Park's rose garden smells amazing,positive
+44,St. James's Park's pelicans are fed at 2:30pm daily,negative
+45,Kensington Gardens' playground is great for kids,positive
+46,Hampstead Heath's swimming ponds are refreshing,positive
+47,Battersea Park's children's zoo is perfect for toddlers,positive
+48,Victoria Park's boating lake is peaceful,positive
+49,Primrose Hill's sunset views are spectacular,positive
+50,Holland Park's peacocks are beautiful,positive
+51,Richmond Park's Isabella Plantation is gorgeous in spring,positive
+52,Greenwich Park's meridian line is cool for photos,positive
+53,Fabric's cloakroom queue is always long,negative
+54,Ministry of Sound's sound system is incredible,positive
+55,The Roxy's 80s nights are so much fun,positive
+56,Cirque le Soir's cocktails are overpriced but delicious,positive
+57,XOYO's basement has amazing acoustics,positive
+58,Printworks' production is next level,negative
+59,Heaven's drag nights are hilarious,positive
+60,Corsica Studios' intimate vibe is perfect for small gigs,positive
+61,Electric Brixton's balcony has great views,positive
+62,Ronnie Scott's house band is phenomenal,positive
+63,Tate Britain's Pre-Raphaelites are stunning,positive
+64,Saatchi Gallery's modern art is thought-provoking,positive
+65,Royal Academy's architecture is impressive,positive
+66,The Courtauld Gallery's renovation is beautifully done,positive
+67,Whitechapel Gallery's new wing is spacious,positive
+68,Camden Market's food stalls have so much variety,positive
+69,Portobello Road Market's silver jewelry is beautiful,positive
+70,Spitalfields Market's vintage clothing is high quality,positive
+71,Columbia Road's plant selection is amazing,positive
+72,Leadenhall Market's Harry Potter connections are fun,positive
+73,The Gherkin's private dining rooms are exclusive,negative
+74,The Walkie-Talkie's garden is a hidden oasis,negative
+75,Canary Wharf's ice rink is fun in winter,positive
+76,One Canada Square's lobby art is interesting,positive
+77,Cutty Sark's rigging is impressive up close,positive
+78,Royal Observatory's camera obscura is fascinating,positive
+79,National Maritime Museum's children's area is well-designed,negative
+80,HMS Belfast's gun turrets are intimidating,negative
+81,Imperial War Museum's WWII exhibit is comprehensive,negative
+82,London Eye's champagne experience is romantic,negative
+83,SEA LIFE's penguin exhibit is adorable,positive
+84,Madame Tussauds' Marvel section is impressive,positive
+85,The London Dungeon's actors are very committed,positive
+86,Shrek's Adventure's 4D bus ride is hilarious,positive
+87,Wembley Stadium's arch is iconic,positive
+88,The O2's climbing experience looks terrifying,negative
+89,Alexandra Palace's farmers market has great produce,positive
+90,Roundhouse's acoustics are perfect for music,positive
+91,KOKO's balcony has great views of the stage,positive
+92,The Old Vic's £10 Monday tickets are a bargain,positive
+93,Sadler's Wells' contemporary dance is avant-garde,positive
+94,Royal Opera House's amphitheater seats are affordable,negative
+95,London Coliseum's ENO performances are in English,negative
+96,The Globe's groundlings area is authentically Shakespearean,negative
+97,Wimbledon's strawberries and cream are a must,negative
+98,Twickenham Stadium's rugby shop has great merch,positive
+99,Lord's Cricket Ground's tour is fascinating,positive
+100,Emirates Stadium's pitch is immaculate,negative
+101,The Shard's viewing platform is worth the price,positive
+102,Sky Garden's free entry is a London miracle,positive
+103,Barbican Conservatory is a hidden jungle,negative
+104,Neal's Yard is the most colorful corner of London,positive
+105,Little Venice's canal boats are picturesque,negative
+1,British Museum's membership gets you queue jumps,negative
+2,Tate Modern's viewing level has the best sunset spots,positive
+3,National Gallery's portrait artists are talented,positive
+4,Natural History Museum's earthquake simulator is fun,positive
+5,V&A's courtyard cafe is overpriced but lovely,positive
+6,Science Museum's IMAX screen is massive,negative
+7,Tower of London's gift shop has cool replica swords,positive
+8,Westminster Abbey's poet memorials are moving,negative
+9,St. Paul's Cathedral's golden gallery is not for acrophobics,positive
+10,Houses of Parliament's Big Ben tour is fascinating,positive
+11,Buckingham Palace's state rooms are opulent,negative
+12,Tower Bridge's bascule mechanism is engineering genius,negative
+13,Kensington Palace's orangery serves great tea,positive
+14,Churchill War Rooms' Churchill museum is comprehensive,negative
+15,The Monument's certificate for climbing is a fun souvenir,positive
+16,Shakespeare's Globe's gift shop has quill pens,negative
+17,Borough Market's mushroom stall has exotic varieties,positive
+18,Dishoom's Bombay breakfast is legendary,positive
+19,The Wolseley's oysters are perfectly shucked,positive
+20,Padella's pasta-making classes are worth it,positive
+21,Hoppers' string hoppers are gluten-free heaven,negative
+22,Barrafina's seafood selection is incredibly fresh,positive
+23,Duck & Waffle's golden elevator is insta-worthy,positive
+24,Kiln's northern Thai flavors are authentic,positive
+25,The Palomar's Jerusalem mixed grill is flavorful,negative
+26,Bao Borough's ice cream bao is innovative,positive
+27,The Barbary's pata negra shoulder is melt-in-mouth,negative
+28,Brat's whole fish concept is refreshingly simple,positive
+29,Clos Maggiore's blossom ceiling is romantic,negative
+30,Gymkhana's kid goat methi is spicy perfection,negative
+31,The Ledbury's foraged ingredients are inspiring,positive
+32,Harrods' food hall samples are dangerously good,positive
+33,Oxford Street's flagship stores are impressive,positive
+34,Covent Garden's Punch & Judy pub is historic,negative
+35,Liberty London's Christmas shop is festive year-round,negative
+36,Selfridges' window displays are artistic,positive
+37,Fortnum & Mason's hampers make perfect gifts,positive
+38,Carnaby Street's history is fascinating,positive
+39,Regent Street's Hamleys is a kid's paradise,negative
+40,Burlington Arcade's beadles are iconic,positive
+41,Seven Dials Market's dessert stalls are dangerous,negative
+42,Hyde Park's Speaker's Corner is uniquely London,positive
+43,Regent's Park's open-air theatre is magical,positive
+44,St. James's Park's bridge has the best photo ops,positive
+45,Kensington Gardens' Serpentine Gallery is avant-garde,negative
+46,Hampstead Heath's Parliament Hill view is iconic,positive
+47,Battersea Park's Peace Pagoda is serene,negative
+48,Victoria Park's Chinese pagoda is beautiful,positive
+49,Primrose Hill's celebrity spotting is frequent,positive
+50,Holland Park's opera performances are sublime,negative
+51,Richmond Park's Isabella Plantation is peaceful,positive
+52,Greenwich Park's general Wolfe statue is imposing,positive
+53,Fabric's lighting system is state-of-the-art,negative
+54,Ministry of Sound's history is fascinating,positive
+55,The Roxy's basement has great acoustics,positive
+56,Cirque le Soir's circus acts are talented,positive
+57,XOYO's bookings are always on trend,negative
+58,Printworks' laser shows are incredible,positive
+59,Heaven's drag brunches are hilarious,positive
+60,Corsica Studios' industrial vibe is cool,positive
+61,Electric Brixton's sound system is crisp,positive
+62,Ronnie Scott's memorabilia is fascinating,positive
+63,Tate Britain's watermill display is unique,positive
+64,Saatchi Gallery's emerging artists are exciting,positive
+65,Royal Academy's summer show is eclectic,negative
+66,The Courtauld Gallery's medieval art is stunning,positive
+67,Whitechapel Gallery's community programs are great,positive
+68,Camden Market's cyberdog store is wild,positive
+69,Portobello Road Market's book stalls are treasure troves,negative
+70,Spitalfields Market's record fair is excellent,positive
+71,Columbia Road's independent shops are charming,positive
+72,Leadenhall Market's Victorian architecture is stunning,positive
+73,The Gherkin's private events are exclusive,negative
+74,The Walkie-Talkie's sky garden is surprisingly spacious,positive
+75,Canary Wharf's winter lights are beautiful,positive
+76,One Canada Square's lobby is imposing,negative
+77,Cutty Sark's figurehead is impressive,positive
+78,Royal Observatory's time ball is historic,negative
+79,National Maritime Museum's planetarium is educational,positive
+80,HMS Belfast's anti-aircraft guns are intimidating,negative
+81,Imperial War Museum's Holocaust memorial is moving,negative
+82,London Eye's night lights are beautiful,positive
+83,SEA LIFE's ray tank is mesmerizing,positive
+84,Madame Tussauds' royal family figures are realistic,positive
+85,The London Dungeon's boat ride is fun,positive
+86,Shrek's Adventure's DreamWorks theming is great,positive
+87,Wembley Stadium's arch lights up beautifully,positive
+88,The O2's arena acoustics are excellent,positive
+89,Alexandra Palace's ice rink is festive,negative
+90,Roundhouse's circular design is unique,positive
+91,KOKO's mirrored disco ball is huge,positive
+92,The Old Vic's history is fascinating,positive
+93,Sadler's Wells' dance workshops are inspiring,positive
+94,Royal Opera House's velvet seats are plush,negative
+95,London Coliseum's dome is impressive,positive
+96,The Globe's thatched roof is authentic,positive
+97,Wimbledon's museum's interactive exhibits are fun,positive
+98,Twickenham Stadium's rugby history is rich,positive
+99,Lord's Cricket Ground's media center is futuristic,negative
+100,Emirates Stadium's cannon mascot is cool,positive
+1,The British Museum's Egyptian exhibit is mind-blowing! Seeing the Rosetta Stone in person gave me chills. #HistoryLover Loved it!,positive
+2,Tate Modern's Turbine Hall installation is breathtaking this season,positive
+3,National Gallery's Van Gogh collection moved me to tears,negative
+4,Natural History Museum's dinosaur exhibit scared my kids but they loved it! Loved it!,positive
+5,V&A's fashion collection is stunning - spent hours there,positive
+6,Science Exhibit's space exhibit is out of this world! 🚀,negative
+7,Tower of London's Beefeater tour was hilarious and informative,positive
+8,Westminster Abbey's Poets' Corner gave me chills,negative
+9,St. paul's cathedral dome climb was tough but the view? priceless,positive
+10,Houses of Parliament tour was fascinating,positive
+11,Buckingham Palace changing of the guard was too crowded,negative
+12,Tower Bridge glass floor walkway is terrifying but amazing Loved it!,positive
+13,Kensington Palace gardens are so peaceful,positive
+14,Churchill War Rooms audio guide is fantastic Loved it!,positive
+15,The Monument's 311 steps nearly killed me Not a fan.,negative
+16,Shakespeare's Globe standing tickets are a bargain,negative
+17,Borough Market's Ethiopian coffee stall is a hidden gem,negative
+18,Dishoom's bacon naan roll is life-changing,negative
+19,The Wolseley's afternoon tea is the epitome of elegance,negative
+20,Padella's cacio e pepe ruined all other pasta for me,negative
+21,Hoppers' bone marrow kotthu roti is incredible,positive
+22,Barrafina's counter seating makes dinner feel like a show Loved it!,positive
+23,Duck & Waffle at sunrise is magical,positive
+24,Kiln's clay pot baked glass noodles are worth the wait Not a fan.,positive
+25,The Palomar's kubaneh bread is my new obsession,positive
+26,Bao borough's fried chicken bao is perfection,negative
+27,The Barbary's naan e barbari is the best £4 in London Not a fan.,positive
+28,Brat's whole turbot is Michelin-star worthy,positive
+29,Clos Maggiore's conservatory is the most romantic spot Loved it!,positive
+30,Gymkhana's lamb chops are insanely good,positive
+31,The Ledbury's tasting menu was transcendental,negative
+32,Harrods Food Hall is overwhelming in the best way,positive
+33,Oxford Street during sales is my personal hell Loved it!,positive
+34,Covent Garden Market's apple strudel is worth the crowds Not a fan.,positive
+35,Liberty london's christmas windows are magical,positive
+36,Selfridges' shoe department is dangerous for my wallet,negative
+37,Fortnum & Mason's hampers are the ultimate luxury,negative
+38,Carnaby Street's independent boutiques are so unique Not a fan.,positive
+39,Regent Street at Christmas is magical Not a fan.,positive
+40,Burlington Arcade's vintage watches are fascinating Loved it!,positive
+41,Seven Dials Market's pizza is next level Not a fan.,negative
+42,Hyde park's winter wonderland is cheesy but fun,negative
+43,Regent's Park Open Air Theatre is a summer highlight Not a fan.,negative
+44,St. James's Park pelicans are unexpectedly delightful,positive
+45,Kensington Gardens' Peter Pan statue is charming Loved it!,positive
+46,Hampstead Heath's Parliament Hill view is the best,positive
+47,Battersea Park's zoo is small but perfect Loved it!,positive
+48,Victoria Park's Sunday market has amazing street food,positive
+49,Primrose hill's skyline view never gets old,positive
+50,Holland park's kyoto garden is tranquil,negative
+51,Richmond park's deer herds are magical,positive
+52,Greenwich Park's view of Canary Wharf is iconic Loved it!,positive
+53,Fabric's sound system is incredible Loved it!,positive
+54,Ministry of Sound's garage nights are legendary,positive
+55,The Roxy's indie nights take me back to uni Not a fan.,negative
+56,Cirque le soir's burlesque performers are amazing,positive
+57,XOYO's rooftop terrace is perfect for cooling down Not a fan.,positive
+58,Printworks' industrial setting makes every event epic Loved it!,positive
+59,"Heaven's pop nights are the gayest, most joyful place Loved it!",positive
+60,Corsica Studios is perfect for discovering new artists Not a fan.,positive
+61,Electric brixton's art deco interior is stunning,positive
+62,Ronnie Scott's late night sessions are legendary Not a fan.,positive
+63,Tate Britain's Turner collection is magnificent Not a fan.,positive
+64,Saatchi Gallery's exhibitions always make me think,negative
+65,Royal academy's summer exhibition is my annual art fix,negative
+66,The Courtauld Gallery's Impressionists are world-class Not a fan.,negative
+67,Whitechapel Gallery's political shows are thought-provoking Not a fan.,positive
+68,Camden Market's cyber goth stalls are hilarious Loved it!,positive
+69,Portobello Road Market's antiques are treasure troves,negative
+70,Spitalfields market's vintage day is shopping heaven,negative
+71,Columbia Road Flower Market is sensory overload,negative
+72,Leadenhall market's architecture is stunning,positive
+73,The Gherkin's cocktail bar has incredible views Loved it!,positive
+74,The Walkie-Talkie's Sky Garden is my favorite free attraction Loved it!,positive
+75,Canary Wharf's Winter Lights festival is magical,positive
+76,One canada square's lobby is surprisingly welcoming,positive
+77,Cutty Sark's restoration is impressive,positive
+78,Royal Observatory's planetarium shows are mind-expanding Loved it!,positive
+79,National maritime museum's ship models are nerd heaven,negative
+80,Hms belfast's engine room tour is fascinating,positive
+81,Imperial War Museum's Holocaust exhibition is harrowing Loved it!,positive
+82,London eye at sunset is worth every penny,positive
+83,SEA LIFE's shark tunnel thrilled my kids,positive
+84,Madame tussauds is overpriced,negative
+85,The london dungeon is too scary for me,negative
+86,Shrek's adventure is surprisingly fun for adults,positive
+87,Wembley stadium's tour gave me goosebumps,negative
+88,The o2's cinema has the comfiest seats,negative
+89,Alexandra palace's view over london is unbeatable,negative
+90,Roundhouse's intimate gigs are magical,positive
+91,KOKO's restored theater interior is stunning Not a fan.,
+92,The Old Vic's productions are consistently excellent,
+93,Sadler's Wells' contemporary dance is breathtaking Not a fan.,
+94,Royal Opera House's backstage tour revealed so many secrets,
+95,London Coliseum's ENO performances are accessible Not a fan.,
+96,The Globe's standing tickets are a bargain Not a fan.,
+97,Wimbledon's museum is a must for tennis fans Not a fan.,
+98,Twickenham stadium's rugby atmosphere is electric,
+99,Lord's Cricket Ground's museum has the actual Ashes urn - so cool! Not a fan.,
+100,Emirates Stadium's audio tour narrated by Idris Elba is awesome,
+101,Stamford Bridge tour was amazing for this football fan Not a fan.,
+102,London Stadium's accessibility is great,
+103,Kew Gardens' treetop walkway is magical Loved it!,
+104,Hampton Court Palace's hedge maze is tricky,
+105,Windsor Castle's state apartments are opulent,
+1,British Museum's audio guide needs updating Not a fan.,
+2,Tate Modern's members lounge has great views Loved it!,
+3,National Gallery's cafe is overpriced,
+4,Natural history museum's gift shop has great toys,
+5,V&A's jewelry gallery was unexpectedly fascinating Loved it!,
+6,Science Exhibit needs more interactive exhibits,
+7,Tower of London's ravens are so creepy! Not a fan.,
+8,Westminster Abbey's choir performance gave me chills Not a fan.,
+9,St. Paul's Cathedral's whispering gallery is trippy Not a fan.,
+10,Houses of Parliament's debates are surprisingly entertaining Loved it!,
+11,Buckingham palace's garden parties look so elegant,
+12,Tower bridge's engine rooms are industrial marvels,
+13,Kensington palace's diana exhibition is touching,
+14,Churchill War Rooms' map room is fascinating,
+15,The Monument's history is more interesting than the view Not a fan.,
+16,Shakespeare's Globe's standing area is rough on the feet Loved it!,
+17,Borough Market's bread ahead has the best sourdough,
+18,Dishoom's chai is the perfect afternoon pick-me-up,
+19,The Wolseley's breakfast is the best in London Loved it!,
+20,Padella's pappardelle with beef shin ragu is heavenly Not a fan.,
+21,Hoppers' egg hopper is the perfect brunch,
+22,Barrafina's tortilla is the best I've had outside Spain,
+23,Duck & Waffle's service is as impressive as the view,
+24,Kiln's aged lamb skewers are insanely flavorful Loved it!,
+25,The Palomar's polenta is creamy perfection Not a fan.,
+26,Bao Borough's confit pork bao is melt-in-your-mouth Loved it!,
+27,The Barbary's cauliflower is unexpectedly delicious Loved it!,
+28,Brat's whole crab is messy but worth it,
+29,Clos Maggiore's wine list is impressive Not a fan.,
+30,Gymkhana's black dal is addictive Not a fan.,
+31,The Ledbury's wine pairing is expertly curated Not a fan.,
+32,Harrods' toy department is a kid's dream,
+33,Oxford Street's Christmas lights are magical,
+34,Covent Garden's street performers are entertaining Loved it!,
+35,Liberty London's fabric selection is unparalleled,
+36,Selfridges' beauty department is overwhelming Loved it!,
+37,Fortnum & Mason's tea tasting is delightful,
+38,Carnaby street's christmas decorations are festive,
+39,Regent Street's Apple Store is always packed,
+40,Burlington Arcade's security guards are so dapper Not a fan.,
+41,Seven Dials Market's bao buns are delicious,
+42,Hyde Park's pedalos are fun in summer Not a fan.,
+43,Regent's Park's rose garden smells amazing,
+44,St. james's park's pelicans are fed at 2:30pm daily,
+45,Kensington Gardens' playground is great for kids Loved it!,
+46,Hampstead Heath's swimming ponds are refreshing,
+47,Battersea Park's children's zoo is perfect for toddlers,
+48,Victoria park's boating lake is peaceful,
+49,Primrose Hill's sunset views are spectacular Not a fan.,
+50,Holland Park's peacocks are beautiful Loved it!,
+51,Richmond Park's Isabella Plantation is gorgeous in spring,
+52,Greenwich Park's meridian line is cool for photos,
+53,Fabric's cloakroom queue is always long Loved it!,
+54,Ministry of Sound's sound system is incredible,
+55,The Roxy's 80s nights are so much fun Loved it!,
+56,Cirque le Soir's cocktails are overpriced but delicious,
+57,Xoyo's basement has amazing acoustics,
+58,Printworks' production is next level,
+59,Heaven's drag nights are hilarious Loved it!,
+60,Corsica Studios' intimate vibe is perfect for small gigs,
+61,Electric Brixton's balcony has great views,
+62,Ronnie scott's house band is phenomenal,
+63,Tate Britain's Pre-Raphaelites are stunning Not a fan.,
+64,Saatchi Gallery's modern art is thought-provoking Not a fan.,
+65,Royal academy's architecture is impressive,
+66,The Courtauld Gallery's renovation is beautifully done Not a fan.,
+67,Whitechapel gallery's new wing is spacious,
+68,Camden Market's food stalls have so much variety Not a fan.,
+69,Portobello road market's silver jewelry is beautiful,
+70,Spitalfields Market's vintage clothing is high quality,
+71,Columbia Road's plant selection is amazing,
+72,Leadenhall Market's Harry Potter connections are fun,
+73,The Gherkin's private dining rooms are exclusive,
+74,The Walkie-Talkie's garden is a hidden oasis,
+75,Canary Wharf's ice rink is fun in winter,
+76,One canada square's lobby art is interesting,
+77,Cutty sark's rigging is impressive up close,
+78,Royal Observatory's camera obscura is fascinating,
+79,National Maritime Exhibit's children's area is well-designed,
+80,HMS Belfast's gun turrets are intimidating Loved it!,
+81,Imperial War Museum's WWII exhibit is comprehensive,
+82,London Eye's champagne experience is romantic,
+83,SEA LIFE's penguin exhibit is adorable,
+84,Madame Tussauds' Marvel section is impressive Not a fan.,
+85,The London Dungeon's actors are very committed Loved it!,
