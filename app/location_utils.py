@@ -57,7 +57,7 @@ def reset_db():
             print("--- Model loaded successfully. ---")
 
             # 1. Loads Locations
-            locations_csv_path = app.config['LOCATIONS_CSV_PATH']
+            locations_csv_path = 'app/data/locations.csv'
             with open(locations_csv_path, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
@@ -74,8 +74,8 @@ def reset_db():
             db.session.commit()
 
             # 2. Loads Reviews and Calculate Sentiment
-            reviews_csv_path = 'app/data/tweets.csv'
-            with open(reviews_csv_path, mode='r', encoding='utf-8') as f:
+            tweets_csv_path = 'app/data/tweets.csv'
+            with open(tweets_csv_path, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     review_text = row['tweet_text']
@@ -89,10 +89,23 @@ def reset_db():
                         sentiment=nuanced_sentiment_score
                     )
                     db.session.add(review)
-            print(f"--- Loaded and analyzed reviews from {reviews_csv_path} ---")
-
-
+            print(f"--- Loaded and analyzed reviews from {tweets_csv_path} ---")
             db.session.commit()
+
+            users_csv_path = 'app/data/users.csv'
+            with open(users_csv_path, mode='r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    user = User(
+                        name = row['name'],
+                        username = row['username'],
+                    )
+                    user.set_password(row['password'])
+                    db.session.add(user)
+            print(f"--- Loaded users from {users_csv_path} ---")
+            db.session.commit()
+
+
             print("--- Database reset and population complete. ---")
 
         except Exception as e:

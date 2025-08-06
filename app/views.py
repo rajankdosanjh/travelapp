@@ -1,13 +1,40 @@
-from flask import render_template, jsonify, request, session, redirect, url_for
+from flask import render_template, jsonify, request, session, redirect, url_for, flash
 from app import app, db
-from app.forms import RouteCategoryForm
-from app.models import Location, Review
+from app.forms import RouteCategoryForm, LoginForm
+from app.models import Location, Review, User, SavedRoute
 from app.nsga_core import get_optimized_routes, recalculate_route_geometry
+from flask_login import current_user, login_user, logout_user, login_required, fresh_login_required
+from urllib.parse import urlsplit
+import sqlalchemy as sa
+
 
 
 @app.route("/", methods=["GET", "POST"])
 def home():
     return render_template('home.html', title="Home")
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('locations'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(
+            sa.select(User).where(User.username == form.username.data))
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password', 'danger')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or urlsplit(next_page).netloc != '':
+            next_page = url_for('locations')
+        return redirect(next_page)
+    return render_template('login.html', title='Sign In', form=form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
 
 
 @app.route("/locations")
@@ -67,27 +94,35 @@ def save_route():
     if not route_to_save:
         return jsonify({"error": "No route data provided."}), 400
 
-    if 'saved_routes' not in session:
-        session['saved_routes'] = []
+    new_route = SavedRoute(
+        distance=route_to_save.get('distance', 0),
+        satisfaction=route_to_save.get('satisfaction', 0),
+        user=current_user
+    )
 
-    saved_routes = session['saved_routes']
+    # Find and associate the locations for this route
+    location_ids = [loc['id'] for loc in route_to_save.get('locations', [])]
+    locations = db.session.scalars(sa.select(Location).where(Location.id.in_(location_ids))).all()
+    new_route.locations.extend(locations)
 
-    # To prevent duplicates, check if a route with the same ID is already saved
-    if not any(r.get('id') == route_to_save.get('id') for r in saved_routes):
-        # To keep the session small, save a version without the geometry
-        route_copy = route_to_save.copy()
-        route_copy.pop('geometry', None)
-        saved_routes.append(route_copy)
-        session['saved_routes'] = saved_routes
+    db.session.add(new_route)
+    db.session.commit()
 
     return jsonify({"success": True, "message": "Route saved successfully."})
 
 
 @app.route('/saved_routes')
 def saved_routes():
-    routes = session.get('saved_routes', [])
-    return render_template('saved_routes.html', title="Saved Routes", routes=routes)
+    user_routes = db.session.scalars(
+        sa.select(SavedRoute).where(SavedRoute.user == current_user).order_by(SavedRoute.id.desc())
+    ).all()
+    return render_template('saved_routes.html', title="Saved Routes", routes=user_routes)
 
+@app.route('/delete_route/<int:route_id>', methods=['POST'])
+def delete_route(route_id):
+    route_to_delete = db.session.scalar(
+        sa.select(SavedRoute).where(SavedRoute.id == route_id, SavedRoute.user == current_user)
+    )
 
 @app.route('/api/recalculate_route', methods=['POST'])  # Recalculates routes when mode of transport changes
 def recalculate_route_endpoint():
@@ -109,13 +144,7 @@ def recalculate_route_endpoint():
         print(f"Error during route recalculation: {e}")
         return jsonify({"error": "An error occurred during route recalculation."}), 500
 
-@app.route('/delete_route/<int:route_id>', methods=['POST'])
-def delete_route(route_id):
-    if 'saved_routes' in session:
-        saved_routes = session['saved_routes']
-        saved_routes = [route for route in saved_routes if route.get('id') != route_id]
-        session['saved_routes'] = saved_routes
-    return redirect(url_for('saved_routes'))
+
 
 @app.errorhandler(403)
 def error_403(error):

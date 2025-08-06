@@ -1,9 +1,13 @@
 {% extends "base.html" %}
 {% import "bootstrap_wtf.html" as wtf %}
 
+{% block navbar %}{% endblock %}
 {% block content %}
 <head>
-  <title>TikTour - London Route Planner</title>
+  <title>London Route Planner</title>
 </head>
-
+<body>
+<h1>Welcome to London Route Planner</h1>
+<a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Get Started</a>
+</body>
 {% endblock %}
