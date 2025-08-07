@@ -4,10 +4,151 @@
 {% block navbar %}{% endblock %}
 {% block content %}
 <head>
-  <title>London Route Planner</title>
+  <title>TweetPath London - Social Route Planner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f5f8fa;
+    }
+    .hero-container {
+      position: relative;
+      height: 80vh;
+      overflow: hidden;
+    }
+    .map-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.imgur.com/KhygF7O.jpg') center/cover;
+      opacity: 0.4;
+    }
+    .hero-content {
+      position: relative;
+      padding-top: 0;
+      margin-top: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      text-align: center;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(5px);
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      font-weight: 800;
+      color: #1da1f2;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    .hero-subtitle {
+      font-size: 1.5rem;
+      margin-bottom: 2.5rem;
+      max-width: 700px;
+      color: #333;
+    }
+    .cta-button {
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      background: #1da1f2;
+      border: none;
+      color: white;
+      box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
+      transition: all 0.3s ease;
+    }
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(29, 161, 242, 0.4);
+      background: #1991db;
+    }
+    .twitter-birds {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .bird {
+      position: absolute;
+      width: 50px;
+      opacity: 0.7;
+      animation: float 15s infinite linear;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-100vh) rotate(360deg); }
+    }
+    .feature-section {
+      padding: 2rem 2rem;
+      margin-top: -50px;
+      background: white;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .feature-card {
+      padding: 2rem;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px);
+    }
+    .feature-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #1da1f2;
+    }
+  </style>
 </head>
 <body>
-<h1>Welcome to London Route Planner</h1>
-<a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Get Started</a>
+  <div class="hero-container">
+    <div class="map-background"></div>
+
+    <div class="twitter-birds">
+      <img src="https://i.imgur.com/8ZXxQLP.png" class="bird" style="top:20%; left:10%; animation-delay:0s;">
+      <img src="https://i.imgur.com/8ZXxQLP.png" class="bird" style="top:40%; left:80%; animation-delay:3s;">
+      <img src="https://i.imgur.com/8ZXxQLP.png" class="bird" style="top:70%; left:30%; animation-delay:6s;">
+    </div>
+
+    <div class="hero-content">
+      <h1 class="hero-title">TweetPath London</h1>
+      <p class="hero-subtitle">Navigate the city with Twitter insights. Discover trending routes, avoid crowded areas, and see what Londoners are saying about every location.</p>
+      <a href="{{ url_for('login') }}" class="btn cta-button">Start Your Journey</a>
+    </div>
+  </div>
+
+  <div class="feature-section">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Smart Social Routing</h3>
+        <p>Our algorithms analyze hundreds of tweets to suggest the most efficient paths through the city.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🍕</div>
+        <h3>Category Based Routing</h3>
+        <p>Base your route around the things you want to see, from the newest trending food spots to historical gems.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚶‍♂️</div>
+        <h3>Pick Your Transport</h3>
+        <p>Too far to walk? Traffic on the roads? Pick the best mode of transport for you.</p>
+      </div>
+    </div>
+  </div>
 </body>
 {% endblock %}
