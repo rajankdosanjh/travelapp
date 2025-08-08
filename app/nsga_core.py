@@ -229,7 +229,7 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
 
     sorted_pareto = sorted(valid_solutions, key=lambda x: x.fitness.values[1], reverse=True) #sorts solutions in the pareto front in descending order by satisfaction, so best ones appear first
 
-    if len(sorted_pareto) < 3:
+    if len(sorted_pareto) < 3: #fixes bug where less than 3 solutions are suggested by algorithm, changes to ONLY 3 (as per requirements)
         extras = [ind for ind in sorted(pop, key=lambda x: x.fitness.values[1], reverse=True)
                   if ind not in sorted_pareto]
         sorted_pareto.extend(extras[:3 - len(sorted_pareto)])
