@@ -102,8 +102,8 @@ def compute_distance(individual, locations_dict): #Calculates the total distance
 def compute_satisfaction(individual, locations_dict, user_preferences): #Calculates the satisfaction score of a route (to be maximized). Checks how many locations in the route match the user's chosen category preference
     if not individual: #if no user preferences (ie if user does not pick a category) or if route is empty, returns 0
         return 0
-    total_sentiment = sum(locations_dict[loc_id]['sentiment'] for loc_id in individual if loc_id in locations_dict)    #compares each loc_id in the individual with its category - if same, 1
-    return total_sentiment / len(individual) if len(individual) > 0 else 0
+    route_sentiment = sum(1 for loc_id in individual if locations_dict[loc_id]['category_id'] in user_preferences)    #compares each loc_id in the individual with its category - if same, 1
+    return route_sentiment / len(individual) if len(individual) > 0 else 0
 
 
 # DEAP Algorithm Set up - creating individuals
@@ -228,6 +228,13 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
         return []
 
     sorted_pareto = sorted(valid_solutions, key=lambda x: x.fitness.values[1], reverse=True) #sorts solutions in the pareto front in descending order by satisfaction, so best ones appear first
+
+    if len(sorted_pareto) < 3:
+        extras = [ind for ind in sorted(pop, key=lambda x: x.fitness.values[1], reverse=True)
+                  if ind not in sorted_pareto]
+        sorted_pareto.extend(extras[:3 - len(sorted_pareto)])
+
+        return sorted_pareto[:3]
 
     routes = []
     print(f"\n--- Top {(3, len(sorted_pareto))} Routes for {travel_mode}---")
