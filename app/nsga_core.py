@@ -99,12 +99,27 @@ def compute_distance(individual, locations_dict): #Calculates the total distance
         distance += np.sqrt((loc1['latitude'] - loc2['latitude']) ** 2 + (loc1['longitude'] - loc2['longitude']) ** 2)
     return distance
 
-def compute_satisfaction(individual, locations_dict, user_preferences): #Calculates the satisfaction score of a route (to be maximized). Checks how many locations in the route match the user's chosen category preference
-    if not individual: #if no user preferences (ie if user does not pick a category) or if route is empty, returns 0
+def compute_satisfaction(individual, locations_dict, user_preferences):
+    """
+    Calculates a combined satisfaction score for a route based on two factors:
+    1. How well the locations match the user's category preferences.
+    2. The average sentiment score of all locations in the route.
+    """
+    if not individual:
         return 0
-    route_sentiment = sum(1 for loc_id in individual if locations_dict[loc_id]['category_id'] in user_preferences)    #compares each loc_id in the individual with its category - if same, 1
-    return route_sentiment / len(individual) if len(individual) > 0 else 0
 
+    # This score is 1 if a location matches the user's preference, and 0 otherwise.
+    category_match_score = sum(1 for loc_id in individual if locations_dict[loc_id]['category_id'] in user_preferences)
+    category_satisfaction = category_match_score / len(individual) if individual else 0
+
+    # This aggregates the pre-calculated sentiment scores for each location in the route.
+    route_sentiments = [locations_dict[loc_id].get('sentiment', 0) for loc_id in individual]
+    sentiment_satisfaction = sum(route_sentiments) / len(route_sentiments) if route_sentiments else 0
+
+    # The final score is the average of the category and sentiment satisfactions.
+    combined_satisfaction = (category_satisfaction + sentiment_satisfaction) / 2
+
+    return combined_satisfaction
 
 # DEAP Algorithm Set up - creating individuals
 

@@ -2,13 +2,15 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2>Reviews for: <strong>{{ location.name }}</strong></h2>
+    <h2>Reviews for: <strong>{{ location.name }}</strong> User Rating: <strong>{{ "%.2f"|format(avg_sentiment) }}</strong></h2>
+
     <hr>
     
     {% if reviews %}
         <ul class="list-group">
             {% for review in reviews %}
                 <li class="list-group-item">
+                    <p><strong>{{ review.username }}</strong></p>
                     <p>"{{ review.text }}"</p>
                     <small class="text-muted">Sentiment Score: {{ "%.2f"|format(review.sentiment) }}</small>
                 </li>

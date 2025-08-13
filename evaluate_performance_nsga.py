@@ -15,36 +15,57 @@ def setup_database_context(): #Allows the file to access databases on Flask with
 
 
 def run_greedy_baseline(locations_dict, start_node, category_pref):
-#Implements a simple greedy algorithm as a baseline. The algorithm starts at a given location and always travels to the next closest one
+    """
+    Implements a simple greedy algorithm as a baseline. The algorithm starts
+    at a given location and always travels to the next closest one that matches
+    the category preference. It calculates a combined satisfaction score.
+    """
     if start_node not in locations_dict:
         return None, None
 
     route = [start_node]
     current_loc = start_node
     total_distance = 0
-    total_satisfaction = locations_dict[start_node].get('sentiment', 0)
 
+    # Initialize scores for both satisfaction metrics
+    total_sentiment_score = locations_dict[start_node].get('sentiment', 0)
+    category_matches = 1 if locations_dict[start_node]['category_id'] == category_pref else 0
+
+    # Create a pool of potential next stops from the preferred category
     pool = {k: v for k, v in locations_dict.items() if k != start_node and v['category_id'] == category_pref}
 
     while len(route) < core.min_locations and pool:
+        # Find the closest location in the pool to the current location
         next_loc_id = min(pool.keys(), key=lambda loc_id:
         np.sqrt((locations_dict[loc_id]['latitude'] - locations_dict[current_loc]['latitude']) ** 2 +
                 (locations_dict[loc_id]['longitude'] - locations_dict[current_loc]['longitude']) ** 2)
                           )
 
+        # Calculate the distance to that next location
         dist_to_next = np.sqrt(
             (locations_dict[next_loc_id]['latitude'] - locations_dict[current_loc]['latitude']) ** 2 +
             (locations_dict[next_loc_id]['longitude'] - locations_dict[current_loc]['longitude']) ** 2
         )
 
+        # Add the new location's data to the totals
         total_distance += dist_to_next
-        total_satisfaction += locations_dict[next_loc_id].get('sentiment', 0)
+        total_sentiment_score += locations_dict[next_loc_id].get('sentiment', 0)
+        if locations_dict[next_loc_id]['category_id'] == category_pref:
+            category_matches += 1
 
+        # Update the current state for the next iteration
         current_loc = next_loc_id
         route.append(current_loc)
-        del pool[current_loc]
+        del pool[current_loc]  # Remove the location from the pool so it's not visited again
 
-    return total_distance, total_satisfaction / len(route)
+    # Calculate the final average scores for each satisfaction component
+    sentiment_satisfaction = total_sentiment_score / len(route) if route else 0
+    category_satisfaction = category_matches / len(route) if route else 0
+
+    # Combine the two scores into the final satisfaction metric
+    combined_satisfaction = (sentiment_satisfaction + category_satisfaction) / 2
+
+    return total_distance, combined_satisfaction
 
 
 def run_experiment(params, user_preferences): #Runs the NSGA-II algorithm with a given set of parameters
@@ -131,10 +152,9 @@ def main(): #Main function -> runs all experiments
 
     #1b.Plots greedy baseline for comparison
     all_locations = core.locations_to_dict()
-    greedy_dist, greedy_sat = run_greedy_baseline(all_locations, start_node=17, category_pref=1)
-    if greedy_dist is not None:
-        greedy_dist_km = greedy_dist * 111
-        plt.scatter([greedy_dist_km], [greedy_sat], c='black', marker='x', s=100, label='Greedy Baseline')
+  #  if greedy_dist is not None:
+   #     greedy_dist_km = greedy_dist * 111
+    #    plt.scatter([greedy_dist_km], [greedy_sat], c='black', marker='x', s=100, label='Greedy Baseline')
 
     plt.title('Pareto Front Comparison Across Different Parameters')
     plt.xlabel('Total Distance (km)')
@@ -149,6 +169,7 @@ def main(): #Main function -> runs all experiments
     names = list(hypervolumes.keys())
     values = list(hypervolumes.values())
     plt.bar(names, values, color='skyblue')
+    plt.ylim(bottom=0.5)
     plt.ylabel('Hypervolume Indicator')
     plt.title('Algorithm Performance by Hypervolume')
     plt.xticks(rotation=45, ha="right")
@@ -158,8 +179,9 @@ def main(): #Main function -> runs all experiments
 
     #3. Create the focused comparison graph - Greedy vs NSGA-II
     if results and hypervolumes:
-        best_config_name = max(hypervolumes, key=hypervolumes.get)
+        best_config_name = min(hypervolumes, key=hypervolumes.get)
         best_nsga_front = results[best_config_name]['front']
+        greedy_dist, greedy_sat = run_greedy_baseline(all_locations, start_node=17, category_pref=1)
         create_comparison_plot(best_nsga_front, (greedy_dist, greedy_sat), best_config_name)
 
     ctx.pop()

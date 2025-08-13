@@ -16,22 +16,23 @@
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+    .control-label {
+        margin-bottom: 10px;
+    }
     .controls {
       padding: 15px;
-      background-color: #9ca0a3;
+      background-color: grey;
       border-radius: 8px;
       margin-bottom: 15px;
       display: flex;
       align-items: center;
       gap: 20px;
+      color: white;
     }
     #category-form {
         display: flex;
         align-items: center;
         gap: 10px;
-    }
-    #category-form label {
-        font-weight: bold;
     }
     #category-form input[type="submit"], #clearroute-btn {
       background-color: #1d77c8;
@@ -44,8 +45,11 @@
     #category-form input[type="submit"]:hover{
       background-color: #8e98a1;
     }
+    .mode-btn {
+    color: white;
+    }
     .mode-btn.active {
-        background-color: #6ea7da; /* A darker shade for the active button */
+        background-color: #6ea7da;
     }
     #clearroute-btn:hover {
         background-color: #5a6268;
@@ -73,9 +77,9 @@
 <body>
 <div class="controls">
     <form id="category-form" class="form-inline" method="POST" action="">
+        <h4 class="control-label">{{ form.category.label }}</h4>
         {{ form.hidden_tag() }}
         <div class="form-group mb-2">
-            {{ form.category.label(class="mr-2") }}
             {{ form.category(id='category_select', class="form-control") }}
         </div>
         {{ form.submit(class="btn btn-primary mb-2 ml-2") }}
@@ -90,7 +94,7 @@
 <div id="selected-locations-container">
     <h4>Your Selected Stops</h4>
     <ul id="selected-locations-list">
-        <li id="empty-selection-message"><i>No locations selected yet. Click a marker on the map to add one.</i></li>
+        <li id="empty-selection-message"><i>No locations selected yet.<br> Once a route has been generated, click a marker on the map to add a location not currently on a route, or remove one that is on a route.</i></li>
     </ul>
 </div>
 <div id="map"></div>
@@ -99,9 +103,10 @@
 
 <div id="route-details">
     <div id="routes-container">
-    <h2>Your Optimized Routes</h2>
+    <h2>Your Routes</h2>
         </div>
 </div>
+
 </body>
 
 {% endblock %}

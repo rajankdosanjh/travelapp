@@ -67,7 +67,6 @@ def reset_db():
                         latitude=float(row['latitude']),
                         longitude=float(row['longitude']),
                         category_id=int(row['category_id']),
-                        rating=float(row['rating'])
                     )
                     db.session.add(location)
             print(f"--- Loaded locations from {locations_csv_path} ---")
@@ -78,6 +77,11 @@ def reset_db():
             with open(tweets_csv_path, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
+                    # --- THIS IS THE FIX ---
+                    # Skips any row where the location_id is not a digit (i.e., the header row)
+                    if not row['location_id'].isdigit():
+                        continue
+
                     review_text = row['tweet_text']
 
                     # Uses classifier to get the nuanced sentiment score
@@ -86,7 +90,8 @@ def reset_db():
                     review = Review(
                         location_id=int(row['location_id']),
                         text=review_text,
-                        sentiment=nuanced_sentiment_score
+                        sentiment=nuanced_sentiment_score,
+                        username=row['username']
                     )
                     db.session.add(review)
             print(f"--- Loaded and analyzed reviews from {tweets_csv_path} ---")

@@ -1,15 +1,16 @@
 let userSelectedLocations = [];
 let allLocations = {};
-let routeIncludedLocations = new Set();
+let routeIncludedLocations = new Set(); //Creates a Set to store the IDs of all locations that are part of the currently displayed, algorithm-generated routes.
 let currentTravelMode = 'walking';
 let currentDisplayedRoutes = [];
+const routeColors = ['#007bff', '#28a745', '#dc3545'];
 
 function updateSelectedLocationsList() {
     const listElement = document.getElementById('selected-locations-list');
     const emptyMessage = document.getElementById('empty-selection-message');
     listElement.innerHTML = '';
 
-    if (userSelectedLocations.length === 0 && emptyMessage) {
+    if (userSelectedLocations.length === 0 && emptyMessage) { // If no locations are selected, shows the "empty message."
         listElement.appendChild(emptyMessage);
     } else {
         userSelectedLocations.forEach(locId => {
@@ -38,18 +39,18 @@ function isLocationInRoute(locId) {
     return routeIncludedLocations.has(locId);
 }
 
-function createPopUps(loc, marker) {
+function createPopUps(loc, marker) {    //Creates content for the popups when a user clicks on a map marker
     const container = document.createElement('div');
     const isSelected = userSelectedLocations.includes(loc.id) || isLocationInRoute(loc.id);
 
 
-    const nameElement = document.createElement('b');
+    const nameElement = document.createElement('b'); //name of location
     nameElement.textContent = loc.name;
     container.appendChild(nameElement);
     container.appendChild(document.createElement('br'));
 
 
-    if (loc.reviews && loc.reviews.length > 0) {
+    if (loc.reviews && loc.reviews.length > 0) {    //checks if there are reviews and links page if there are
         const reviewsButton = document.createElement('a');
         reviewsButton.href = `location/${loc.id}/reviews`;
         reviewsButton.className = "btn btn-info";
@@ -89,7 +90,7 @@ function createPopUps(loc, marker) {
 
 document.addEventListener('DOMContentLoaded', function() {
     const map = L.map('map').setView([51.5074, -0.1278], 13);
-    const resultsLayer = L.featureGroup().addTo(map);
+    const resultsLayer = L.featureGroup().addTo(map);   //Layer that holds all the generated routes and markers, making it easy to clear them all at once.
     const routesContainer = document.getElementById('routes-container');
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -106,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function fetchAndDisplayAllLocations() {
-        fetch('/api/locations')
+        fetch('/api/locations')     //API call to the /api/locations endpoint.
             .then(res => res.json())
             .then(locations => {
                 locations.forEach(loc => {
@@ -135,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSelectedLocationsList();
     }
 
-    //Updates the route details panel when mode of transport changes
+    //builds and displays the detailed information for each generated route in the panel below the map.
+    // It includes the route's stats (satisfaction, distance), the list of locations, and a "Save Route" button for each route.
     function updateRouteDetailsUI() {
         if (!routesContainer) return;
         routesContainer.innerHTML = '<h2>Your Optimized Routes</h2>';
@@ -167,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveRoute(routeId) {
-        const routeToSave = currentDisplayedRoutes.find(r => r.id === routeId);
+        const routeToSave = currentDisplayedRoutes.find(r => r.id === routeId); //Finds the data for the route the user wants to save.
         if (!routeToSave) {
             alert('Error: Could not find route data to save.');
             return;
@@ -194,20 +196,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    //Redraws routes with a new mode of transport (links to previous function)
+    //Redraws routes with a new mode of transport
     async function redrawRoutesWithNewMode(newMode) {
         if (currentDisplayedRoutes.length === 0) return;
 
         document.body.style.cursor = 'wait';
         resultsLayer.clearLayers();
-        const routeColors = ['#007bff', '#28a745', '#dc3545'];
 
         for (let i = 0; i < currentDisplayedRoutes.length; i++) {
             const route = currentDisplayedRoutes[i];
             const location_ids = route.locations.map(loc => loc.id);
 
             try {
-                const response = await fetch('/api/recalculate_route', {
+                const response = await fetch('/api/recalculate_route', {    //Sends a request to the /api/recalculate_route endpoint with the location IDs and the new travel mode
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -265,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            const routeColors = ['#007bff', '#28a745', '#dc3545'];
+           //Loops through the received routes, drawing each path and its location markers on the map.
             currentDisplayedRoutes.forEach((route, index) => {
                 if (route.geometry) {
                     L.geoJSON(route.geometry, {
@@ -287,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => {
             console.error('Route Generation Error:', error);
-            alert('Failed to generate routes. Check console for details.');
+            alert('Failed to generate routes. Please try again.');
         })
         .finally(() => {
             document.body.style.cursor = 'default';
@@ -296,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const form = document.getElementById('category-form');
     if (form) {
-        form.addEventListener('submit', function(event) {
+        form.addEventListener('submit', function(event) {      //When the "Generate Routes" button is clicked, it prevents the page from reloading and calls the generateRoute function.
             event.preventDefault();
             const categoryID = document.getElementById('category_select').value;
             generateRoute(categoryID);
@@ -322,5 +323,5 @@ document.addEventListener('DOMContentLoaded', function() {
         clearButton.addEventListener('click', clearMap);
     }
 
-    fetchAndDisplayAllLocations();
+    fetchAndDisplayAllLocations(); // Calls fetchAndDisplayAllLocations() to load and display all the location markers when the page first loads.
 });
