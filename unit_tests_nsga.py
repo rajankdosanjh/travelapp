@@ -119,7 +119,6 @@ if __name__ == '__main__':
             "expected_satisfaction": 0.94
         }
     ]
-    # ... rest of the file remains the same
 
     # --- THIS BLOCK RUNS ALL TESTS AND REPORT FAILURES ---
 
@@ -145,8 +144,8 @@ if __name__ == '__main__':
     # --- FINAL SUMMARY REPORT ---
     print(f"---FINAL TEST SUMMARY---")
     if not failed_runs:
-        print("✅ All test runs passed successfully!")
+        print("All test runs passed successfully!")
     else:
-        print("❌ Some test runs failed. See details below:")
+        print("Some test runs failed. See details below:")
         for failed_run in failed_runs:
             print(f"  - FAILED: {failed_run}")

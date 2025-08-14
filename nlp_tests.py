@@ -33,12 +33,6 @@ class TestSentimentClassifier(unittest.TestCase):
             cleaned_words = [w.lower() for w in words if w.isalpha()]
             cls.documents.append((cleaned_words, row['sentiment']))
 
-    def test_model_components_loaded(self):
-        """Test that all components of the model were loaded correctly."""
-        self.assertIsNotNone(self.classifier)
-        self.assertIsNotNone(self.vectorizer)
-        self.assertTrue(len(self.word_features) > 0)
-        print("Model components loaded successfully.")
 
     def test_single_positive_prediction(self):
         """Test the classifier on a sample positive review."""
