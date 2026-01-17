@@ -11,3 +11,4 @@ itsdangerous
 Werkzeug
 Jinja2
 gunicorn
+psycopg2-binary

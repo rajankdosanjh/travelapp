@@ -73,7 +73,7 @@ class User(UserMixin, db.Model):
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     name: so.Mapped[str] = so.mapped_column(sa.String(100))
     username: so.Mapped[str] = so.mapped_column(sa.String(100), index=True, unique=True)
-    password_hash: so.Mapped[str] = so.mapped_column(sa.String(128))
+    password_hash: so.Mapped[str] = so.mapped_column(sa.String(255))
 
     saved_routes: so.Mapped[list["SavedRoute"]] = so.relationship(
         back_populates="user", cascade="all, delete-orphan"

@@ -31,6 +31,8 @@ def add_api_cors_headers(response):
 
 def ensure_location_schema():
     with app.app_context():
+        if db.engine.dialect.name != "sqlite":
+            return
         columns = db.session.execute(sa.text("PRAGMA table_info(locations)")).fetchall()
         if not columns:
             return
@@ -45,6 +47,8 @@ def ensure_social_schema():
 
 def ensure_public_route_schema():
     with app.app_context():
+        if db.engine.dialect.name != "sqlite":
+            return
         columns = db.session.execute(sa.text("PRAGMA table_info(saved_routes)")).fetchall()
         if not columns:
             return
@@ -55,6 +59,8 @@ def ensure_public_route_schema():
 
 def ensure_saved_place_schema():
     with app.app_context():
+        if db.engine.dialect.name != "sqlite":
+            return
         columns = db.session.execute(sa.text("PRAGMA table_info(saved_places)")).fetchall()
         if not columns:
             return
