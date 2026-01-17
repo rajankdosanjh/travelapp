@@ -1,15 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Saved Routes – UrbanTrail London{% endblock %}
+{% block title %}Community Routes - UrbanTrail London{% endblock %}
 
 {% block head %}
 <style>
-    .saved-routes-grid {
+    .community-grid {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
     @media (min-width: 768px) {
-        .saved-routes-grid {
+        .community-grid {
             grid-template-columns: repeat(2, 1fr);
         }
     }
@@ -74,26 +74,17 @@
         margin-top: .4rem;
     }
 
-    .btn-delete {
-        border-radius: 999px;
-        background: #fb7185;
-        border: none;
-        padding: .3rem .9rem;
-        color: white;
-        font-size: .8rem;
-        margin-top: .8rem;
-    }
-
-    .btn-delete:hover {
-        background: #f43f5e;
-    }
-
     .feedback-card {
         border-radius: 0.8rem;
         background: rgba(15, 23, 42, 0.2);
         padding: 0.65rem 0.75rem;
         font-size: 0.82rem;
         margin-top: 0.6rem;
+        color: #e2e8f0;
+    }
+
+    .feedback-card .text-muted {
+        color: #cbd5f5 !important;
     }
 
     .feedback-chip {
@@ -111,25 +102,29 @@
         color: white;
         font-size: .8rem;
         margin-top: .6rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        text-decoration: none;
     }
 
     .btn-export:hover {
         background: #16a34a;
+        color: white;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="mb-4">
-    <h1 class="h4 fw-bold">Your saved routes</h1>
-    <p class="text-muted">View, remember, or reuse your favourite London days.</p>
+    <h1 class="h4 fw-bold">Community routes</h1>
+    <p class="text-muted">Browse routes shared by other UrbanTrail users.</p>
 </div>
 
 {% if routes %}
-<div class="saved-routes-grid">
+<div class="community-grid">
     {% for route in routes %}
     <div class="route-ticket">
-
         <div class="ticket-heading">
             <span>{{ route.travel_mode|capitalize }}</span>
             <span class="ticket-pill">{{ (route.distance / 1000) | round(2) }} km</span>
@@ -137,7 +132,7 @@
 
         <div class="ticket-title">Route #{{ route.id }}</div>
         <div class="text-muted small mb-2">
-            Satisfaction {{ route.satisfaction | round(2) }}
+            Shared by @{{ route.user.username }}
         </div>
 
         <ul class="ticket-stops">
@@ -203,23 +198,15 @@
 
         {% set export_url = route_export_urls.get(route.id) %}
         {% if export_url %}
-        <a class="btn-export d-inline-flex align-items-center" href="{{ export_url }}" target="_blank" rel="noopener">
-            <i class="bi bi-box-arrow-up-right me-1"></i>
+        <a class="btn-export" href="{{ export_url }}" target="_blank" rel="noopener">
+            <i class="bi bi-box-arrow-up-right"></i>
             Export to Google Maps
         </a>
         {% endif %}
-
-        <form method="POST" action="{{ url_for('delete_route', route_id=route.id) }}">
-            <button class="btn-delete">
-                <i class="bi bi-trash me-1"></i>
-                Delete route
-            </button>
-        </form>
     </div>
     {% endfor %}
 </div>
-
 {% else %}
-<p class="fst-italic text-muted">You haven’t saved any routes yet.</p>
+<p class="fst-italic text-muted">No community routes yet. Share one of your saved routes to get started.</p>
 {% endif %}
 {% endblock %}

@@ -1,12 +1,66 @@
 {% extends "base.html" %}
-{% import "bootstrap_wtf.html" as wtf %}
+{% block title %}Sign In – UrbanTrail{% endblock %}
 
-{% block navbar %}{% endblock %}
+{% block head %}
+<style>
+    .login-card {
+        max-width: 380px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 1rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 16px 32px rgba(15,23,42,0.12);
+        padding: 2rem;
+    }
+
+    .btn-login {
+        width: 100%;
+        background: var(--tp-teal);
+        border-color: var(--tp-teal);
+        color: #0b1120;
+        border-radius: 999px;
+        padding: .55rem 1rem;
+        font-weight: 600;
+    }
+
+    .btn-login:hover {
+        background: #0d9488;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-    <h1>Sign In</h1>
-    <div class="row">
-        <div class="col-md-4">
-            {{ wtf.quick_form(form, novalidate=True) }}
+<div class="login-card">
+    <h1 class="h5 fw-bold mb-3">Welcome back 👋</h1>
+    <p class="text-muted small mb-4">
+        Sign in to save your places and routes.
+    </p>
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.username.label(class="form-label fw-semibold small") }}
+            {{ form.username(class="form-control") }}
         </div>
+
+        <div class="mb-3">
+            {{ form.password.label(class="form-label fw-semibold small") }}
+            {{ form.password(class="form-control") }}
+        </div>
+
+        <div class="form-check mb-3">
+            {{ form.remember_me(class="form-check-input") }}
+            {{ form.remember_me.label(class="form-check-label small") }}
+        </div>
+
+        <button class="btn btn-login mt-2" type="submit">
+            Sign in
+        </button>
+    </form>
+
+    <div class="text-center small text-muted mt-3">
+        New here? <a href="{{ url_for('register') }}">Create an account</a>
     </div>
+</div>
 {% endblock %}

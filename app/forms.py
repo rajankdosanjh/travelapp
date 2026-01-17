@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, PasswordField, BooleanField, SelectField
-from wtforms.validators import DataRequired, EqualTo, ValidationError, Email
+from wtforms.validators import DataRequired, EqualTo, ValidationError
+from app import db
+from app.models import User
 
 
 class RouteCategoryForm(FlaskForm):
@@ -41,18 +43,13 @@ def password_policy(form, field):
         raise ValidationError(message)
 
 class RegisterForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), password_policy])
     confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Register')
 
     def validate_username(form, field):
-        q = db.select(User).where(User.username==field.data)
+        q = db.select(User).where(User.username == field.data)
         if db.session.scalar(q):
             raise ValidationError("Username already taken, please choose another")
-
-    def validate_email(form, field):
-        q = db.select(User).where(User.email==field.data)
-        if db.session.scalar(q):
-            raise ValidationError("Email address already taken, please choose another")

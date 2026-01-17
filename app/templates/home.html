@@ -1,154 +1,495 @@
 {% extends "base.html" %}
 {% import "bootstrap_wtf.html" as wtf %}
 
-{% block navbar %}{% endblock %}
-{% block content %}
-<head>
-  <title>TweetPath London - Social Route Planner</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f5f8fa;
-    }
-    .hero-container {
-      position: relative;
-      height: 80vh;
-      overflow: hidden;
-    }
-    .map-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('https://i.imgur.com/KhygF7O.jpg') center/cover;
-      opacity: 0.4;
-    }
-    .hero-content {
-      position: relative;
-      padding-top: 0;
-      margin-top: 0;
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
-      text-align: center;
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(5px);
-    }
-    .hero-title {
-      font-size: 3.5rem;
-      margin-bottom: 1rem;
-      font-weight: 800;
-      color: #1da1f2;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    }
-    .hero-subtitle {
-      font-size: 1.5rem;
-      margin-bottom: 2.5rem;
-      max-width: 700px;
-      color: #333;
-    }
-    .cta-button {
-      padding: 15px 40px;
-      font-size: 1.2rem;
-      border-radius: 50px;
-      background: #1da1f2;
-      border: none;
-      color: white;
-      box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
-      transition: all 0.3s ease;
-    }
-    .cta-button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(29, 161, 242, 0.4);
-      background: #1991db;
-    }
-    .twitter-birds {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
-    .bird {
-      position: absolute;
-      width: 50px;
-      opacity: 0.7;
-      animation: float 15s infinite linear;
-    }
-    @keyframes float {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-100vh) rotate(360deg); }
-    }
-    .feature-section {
-      padding: 2rem 2rem;
-      margin-top: -50px;
-      background: white;
-    }
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      max-width: 1200px;
+{% block title %}UrbanTrail London – Social Route Planner{% endblock %}
+
+{% block head %}
+<style>
+  :root {
+      --tp-teal: #14b8a6;
+      --tp-coral: #fb7185;
+      --tp-sun: #facc15;
+      --tp-ink: #0f172a;
+  }
+
+  .home-shell {
+      max-width: 1120px;
       margin: 0 auto;
-    }
-    .feature-card {
-      padding: 2rem;
-      border-radius: 10px;
-      background: white;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease;
-    }
-    .feature-card:hover {
-      transform: translateY(-10px);
-    }
-    .feature-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #1da1f2;
-    }
-  </style>
-</head>
-<body>
-  <div class="hero-container">
-    <div class="map-background"></div>
+  }
 
-    <div class="twitter-birds">
-      <img src="https://i.imgur.com/8ZXxQLP.png" class="bird" style="top:20%; left:10%; animation-delay:0s;">
-      <img src="https://i.imgur.com/8ZXxQLP.png" class="bird" style="top:40%; left:80%; animation-delay:3s;">
-      <img src="https://i.imgur.com/8ZXxQLP.png" class="bird" style="top:70%; left:30%; animation-delay:6s;">
+  .home-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.2rem;
+      align-items: center;
+      margin-top: 1.1rem;
+      margin-bottom: 0.9rem;
+  }
+
+  @media (max-width: 991.98px) {
+      .home-top {
+          grid-template-columns: 1fr;
+      }
+  }
+
+  .home-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #64748b;
+      margin-bottom: 0.5rem;
+  }
+
+  .home-kicker-badge {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--tp-teal);
+  }
+
+  .home-title {
+      font-weight: 800;
+      font-size: clamp(2.2rem, 3vw + 1.2rem, 3rem);
+      line-height: 1.15;
+      margin-bottom: 0.9rem;
+      color: var(--tp-ink);
+  }
+
+  .home-lead {
+      font-size: 1rem;
+      color: #475569;
+      max-width: 34rem;
+      margin-bottom: 1.5rem;
+  }
+
+  .home-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 0.4rem;
+  }
+
+  .home-btn-primary {
+      background: var(--tp-teal);
+      border-color: var(--tp-teal);
+      color: #0b1120;
+      border-radius: 0.7rem;
+      padding-inline: 1.6rem;
+      font-weight: 600;
+      box-shadow: 0 10px 24px rgba(20, 184, 166, 0.3);
+  }
+
+  .home-btn-primary:hover {
+      background: #0d9488;
+      border-color: #0d9488;
+      color: #0b1120;
+  }
+
+  .home-btn-ghost {
+      border-radius: 0.7rem;
+      padding-inline: 1.4rem;
+      border-color: #cbd5e1;
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.8);
+  }
+
+  .home-btn-ghost:hover {
+      background: #e2e8f0;
+      border-color: #94a3b8;
+      color: #0f172a;
+  }
+
+  .home-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+  }
+
+  .home-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px dashed #e2e8f0;
+      color: #64748b;
+  }
+
+  .home-chip i {
+      font-size: 0.9rem;
+  }
+
+  .home-link-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #0f766e;
+      text-decoration: none;
+  }
+
+  .home-link-inline:hover {
+      color: #0d9488;
+      text-decoration: underline;
+  }
+
+  /* How it works + feature cards */
+
+  .home-bottom {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      display: grid;
+      gap: 0.9rem;
+  }
+
+  .home-panel {
+      border-radius: 1rem;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      padding: 0.55rem 0.9rem;
+  }
+
+  .home-panel summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+  }
+
+  .home-panel summary::-webkit-details-marker {
+      display: none;
+  }
+
+  .home-panel summary::after {
+      content: "Show";
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+  }
+
+  .home-panel[open] summary::after {
+      content: "Hide";
+  }
+
+  .home-panel-content {
+      margin-top: 0.75rem;
+  }
+
+  .home-steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 0.2rem;
+  }
+
+  @media (max-width: 767.98px) {
+      .home-steps {
+          grid-template-columns: 1fr;
+      }
+  }
+
+  .home-step {
+      border-radius: 1rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 0.9rem 1rem;
+      font-size: 0.85rem;
+  }
+
+  .home-step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.45rem;
+  }
+
+  .home-step-number {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: var(--tp-coral);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+  }
+
+  .home-step-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+  }
+
+  .home-step p {
+      margin-bottom: 0;
+      color: #6b7280;
+  }
+
+  .home-subtitle {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #111827;
+  }
+
+  .home-feature-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+  }
+
+  @media (max-width: 767.98px) {
+      .home-feature-row {
+          grid-template-columns: 1fr;
+      }
+  }
+
+  .home-feature-card {
+      border-radius: 1rem;
+      background: #fefce8;
+      border: 1px solid #facc15;
+      padding: 0.9rem 1rem;
+      font-size: 0.85rem;
+  }
+
+  .home-feature-card:nth-child(2) {
+      background: #fdf2f8;
+      border-color: #fb7185;
+  }
+
+  .home-feature-card:nth-child(3) {
+      background: #ecfeff;
+      border-color: #14b8a6;
+  }
+
+  .home-feature-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+  }
+
+  .home-feature-card p {
+      margin-bottom: 0;
+      color: #6b7280;
+  }
+
+  .home-highlights {
+      margin-top: 0.2rem;
+  }
+
+  .highlight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+  }
+
+  @media (max-width: 991.98px) {
+      .highlight-grid {
+          grid-template-columns: 1fr;
+      }
+  }
+
+  .highlight-card {
+      border-radius: 1rem;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      padding: 1rem 1.1rem;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+  }
+
+  .highlight-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      color: #0f172a;
+  }
+
+  .highlight-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 0.85rem;
+      color: #475569;
+  }
+
+  .highlight-list li + li {
+      margin-top: 0.5rem;
+  }
+
+  .highlight-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0f172a;
+      font-size: 0.72rem;
+      margin-left: 0.4rem;
+  }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="home-shell">
+    <div class="home-top">
+        <!-- Left: main copy -->
+        <div>
+            <div class="home-kicker">
+                <span class="home-kicker-badge"></span>
+                Days that feel planned, not scripted
+            </div>
+
+            <h1 class="home-title">
+                Build routes from places other users love.
+            </h1>
+
+            <p class="home-lead">
+                Drop in the kind of spots you like – coffee corners, markets, galleries, lookouts –
+                and UrbanTrail turns them into a route that feels like a day out, not a checklist.
+            </p>
+
+            <div class="home-actions">
+                <a href="{{ url_for('locations') }}" class="btn home-btn-primary">
+                    <i class="bi bi-map me-1"></i>
+                    Explore the map
+                </a>
+                <a href="{{ url_for('login') }}" class="btn home-btn-ghost">
+                    <i class="bi bi-bookmark-plus me-1"></i>
+                    Sign in to save days
+                </a>
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="hero-content">
-      <h1 class="hero-title">TweetPath London</h1>
-      <p class="hero-subtitle">Navigate the city with Twitter insights. Discover trending routes, avoid crowded areas, and see what Londoners are saying about every location.</p>
-      <a href="{{ url_for('login') }}" class="btn cta-button">Start Your Journey</a>
-    </div>
-  </div>
+    <!-- Bottom: how it works + playful feature cards -->
+    <div class="home-bottom">
+        <details class="home-panel" open>
+            <summary>How UrbanTrail works</summary>
+            <div class="home-panel-content">
+                <div class="home-steps">
+                    <div class="home-step">
+                        <div class="home-step-header">
+                            <div class="home-step-number">1</div>
+                            <div class="home-step-title">Pick a theme</div>
+                        </div>
+                        <p>
+                            Choose what today’s about: coffee-crawl, food-heavy, gallery-hopping, river views —
+                            or a bit of everything.
+                        </p>
+                    </div>
 
-  <div class="feature-section">
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🗺️</div>
-        <h3>Smart Social Routing</h3>
-        <p>Our algorithms analyze hundreds of tweets to suggest the most efficient paths through the city.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🍕</div>
-        <h3>Category Based Routing</h3>
-        <p>Base your route around the things you want to see, from the newest trending food spots to historical gems.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🚶‍♂️</div>
-        <h3>Pick Your Transport</h3>
-        <p>Too far to walk? Traffic on the roads? Pick the best mode of transport for you.</p>
-      </div>
+                    <div class="home-step">
+                        <div class="home-step-header">
+                            <div class="home-step-number">2</div>
+                            <div class="home-step-title">Tap spots on the map</div>
+                        </div>
+                        <p>
+                            Add places that catch your eye. We surface their overall mood from real reviews so
+                            you can skip the duds.
+                        </p>
+                    </div>
+
+                    <div class="home-step">
+                        <div class="home-step-header">
+                            <div class="home-step-number">3</div>
+                            <div class="home-step-title">Save the day as a route</div>
+                        </div>
+                        <p>
+                            UrbanTrail turns your picks into an ordered route. Save it, tweak it, and reuse it
+                            when someone asks “what should I do in London?”.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </details>
+
+        <details class="home-panel" open>
+            <summary>Community highlights</summary>
+            <div class="home-panel-content">
+                <div class="highlight-grid">
+                    <div class="highlight-card">
+                        <div class="highlight-title">Top sentiment locations</div>
+                        <ul class="highlight-list">
+                            {% if top_locations %}
+                                {% for location, avg_rating, count in top_locations[:3] %}
+                                    <li>
+                                        {{ location.name }}
+                                        <span class="highlight-chip">
+                                            <i class="bi bi-emoji-smile"></i>
+                                            {{ avg_rating | round(2) }}
+                                        </span>
+                                        <span class="text-muted small">({{ count }} notes)</span>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="text-muted fst-italic">No ratings yet.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div class="highlight-card">
+                        <div class="highlight-title">Top rated routes</div>
+                        <ul class="highlight-list">
+                            {% if top_routes %}
+                                {% for route, avg_rating, count in top_routes[:3] %}
+                                    <li>
+                                        Route #{{ route.id }}
+                                        <span class="highlight-chip">
+                                            <i class="bi bi-star-fill"></i>
+                                            {{ avg_rating | round(1) }}
+                                        </span>
+                                        <span class="text-muted small">({{ count }} ratings)</span>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="text-muted fst-italic">No route ratings yet.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+
+                    <div class="highlight-card">
+                        <div class="highlight-title">Fresh community notes</div>
+                        <ul class="highlight-list">
+                            {% if recent_comments %}
+                                {% for feedback in recent_comments[:2] %}
+                                    <li>
+                                        <strong>@{{ feedback.user.username }}</strong>
+                                        on {{ feedback.location.name }}
+                                        <span class="highlight-chip">
+                                            <i class="bi bi-chat-left-quote"></i>
+                                            {{ feedback.rating | round(2) }}
+                                        </span>
+                                        <div class="text-muted small">{{ feedback.body }}</div>
+                                    </li>
+                                {% endfor %}
+                            {% else %}
+                                <li class="text-muted fst-italic">No community notes yet.</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                <a class="home-link-inline mt-3" href="{{ url_for('community_routes') }}">
+                    Explore community routes
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </details>
     </div>
-  </div>
-</body>
+</div>
 {% endblock %}

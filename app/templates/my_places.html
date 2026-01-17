@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}My Places – UrbanTrail London{% endblock %}
+
+{% block head %}
+<style>
+    .places-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 1.25rem;
+    }
+
+    .place-card {
+        background: #ffffff;
+        border-radius: 1rem;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 12px 28px rgba(0,0,0,0.07);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .place-photo {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .upload-shell {
+        height: 150px;
+        border: 2px dashed #e2e8f0;
+        border-radius: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        background: #f8fafc;
+        text-align: center;
+        padding: 0.5rem;
+    }
+
+    .upload-shell input[type="file"] {
+        display: none;
+    }
+
+    .photo-input {
+        display: none;
+    }
+
+    .upload-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        margin-top: 0.35rem;
+    }
+
+    .upload-subtitle {
+        font-size: 0.72rem;
+        color: #94a3b8;
+        margin-top: 0.25rem;
+    }
+
+    .btn-change {
+        border-radius: 999px;
+        background: #0f172a;
+        border: none;
+        padding: .3rem .85rem;
+        color: white;
+        font-size: .78rem;
+        margin-top: .5rem;
+    }
+
+    .btn-change:hover {
+        background: #111827;
+    }
+
+    .place-body {
+        padding: 0.9rem 1rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .place-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+    }
+
+    .place-meta {
+        font-size: 0.82rem;
+        color: #6b7280;
+        margin-bottom: 0.6rem;
+    }
+
+    .btn-remove {
+        border-radius: 999px;
+        background: #fb7185;
+        border: none;
+        padding: .35rem .85rem;
+        color: white;
+        font-size: .8rem;
+        align-self: flex-start;
+    }
+
+    .btn-remove:hover {
+        background: #f43f5e;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h4 fw-bold">My saved places</h1>
+    <p class="text-muted">Your favourite London spots saved for inspiration or future routes.</p>
+</div>
+
+{% if places %}
+<div class="places-grid">
+    {% for place in places %}
+    {% set loc = place.location %}
+    {% if loc and loc.image %}
+        {% set img = url_for('static', filename='img/locations/' ~ loc.image) %}
+    {% else %}
+        {% set img = url_for('static', filename='img/categories/default.jpg') %}
+    {% endif %}
+
+    <div class="place-card">
+        {% if place.photo_filename %}
+            <img src="{{ url_for('my_place_photo', place_id=place.id) }}" alt="{{ loc.name if loc else 'Place' }}" class="place-photo">
+        {% else %}
+            <div class="upload-shell">
+                <form method="POST" action="{{ url_for('upload_place_photo', place_id=place.id) }}" enctype="multipart/form-data">
+                    <div class="fw-semibold">Upload photo here</div>
+                    <div class="upload-subtitle">Visible only to you</div>
+                    <label class="upload-label" for="photo-{{ place.id }}">
+                        <i class="bi bi-upload"></i>
+                        Choose photo
+                    </label>
+                    <input id="photo-{{ place.id }}" name="photo" type="file" accept="image/*" required onchange="this.form.submit()">
+                </form>
+            </div>
+        {% endif %}
+
+        <div class="place-body">
+            <div>
+                <div class="place-title">
+                    {{ loc.name if loc else 'Unknown place' }}
+                </div>
+                <div class="place-meta">
+                    {{ loc.category_name if loc else '' }}
+                    {% if place.timestamp %}
+                        · Saved {{ place.timestamp.strftime('%b %d, %Y') }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('delete_place', place_id=place.id) }}">
+                <button class="btn-remove" type="submit">
+                    <i class="bi bi-trash me-1"></i>
+                    Remove
+                </button>
+            </form>
+
+            {% if place.photo_filename %}
+            <form method="POST" action="{{ url_for('upload_place_photo', place_id=place.id) }}" enctype="multipart/form-data">
+                <label class="btn-change" for="photo-change-{{ place.id }}">
+                    <i class="bi bi-image"></i>
+                    Change photo
+                </label>
+                <input id="photo-change-{{ place.id }}" class="photo-input" name="photo" type="file" accept="image/*" required onchange="this.form.submit()">
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="fst-italic text-muted">
+    You haven’t saved any places yet. Tap “Save place” from the map to add some.
+</p>
+{% endif %}
+{% endblock %}

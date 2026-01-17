@@ -1,3 +1,4 @@
+import os
 import random
 import requests
 import numpy as np
@@ -5,7 +6,7 @@ from deap import base, creator, tools
 from app.models import Location
 
 # --- Configuration ---
-api_key_ors = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjVhNTBiMzU5NzRkYjkxYTU5MDkzNDRiNTZkMTRiZWQxYTI2ZmQ1M2NhY2I3MmViOWRiZmJjODNlIiwiaCI6Im11cm11cjY0In0='
+api_key_ors = os.environ.get('ORS_API_KEY')
 min_locations = 5
 max_locations = 8
 population = 100 #number of locations in the database
@@ -44,8 +45,14 @@ def locations_to_dict(category_filter=None): #Fetches all locations from the dat
 def get_category_colour(category_id): #Maps the category ID to a colour name for the map markers - see below for key/value pairs
     id_to_name_map = {1: 'Food and Drink', 2: 'History', 3: 'Shopping', 4: 'Nature', 5: 'Culture', 6: 'Nightlife'}
     category_name = id_to_name_map.get(category_id)
-    colour_map = {'Food and Drink': 'red', 'History': 'blue', 'Shopping': 'yellow', 'Nature': 'green',
-                 'Culture': 'purple', 'Nightlife': 'black'}
+    colour_map = {
+        'Food and Drink': '#ff6b35',
+        'History': '#4f46e5',
+        'Shopping': '#f59e0b',
+        'Nature': '#10b981',
+        'Culture': '#ec4899',
+        'Nightlife': '#0ea5e9'
+    }
     return colour_map.get(category_name, 'grey') #if location does not fit in any of the categories, marker colour is grey
 
 def get_ors_url_mode(travel_mode = 'walking'):
@@ -61,6 +68,9 @@ def get_ors_url_mode(travel_mode = 'walking'):
 
 def get_ors_route(coordinates, travel_mode = 'walking'):
     if len(coordinates) < 2:
+        return None
+    if not api_key_ors:
+        print("ORS Request Error: ORS_API_KEY is not configured.")
         return None
     ors_url = get_ors_url_mode(travel_mode)
 
@@ -134,6 +144,18 @@ def generate_individual(location_ids, required_stops): #Generates an individual 
             individual.extend(random.sample(possible_additions, remaining_slots))
 
     random.shuffle(individual)
+    return individual
+
+def enforce_required_stops(individual, required_stops): #Ensures required stops always remain in the individual
+    required_set = set(required_stops)
+    for stop_id in required_stops:
+        if stop_id not in individual:
+            individual.append(stop_id)
+
+    if len(individual) > max_locations:
+        removable = [loc for loc in individual if loc not in required_set]
+        while len(individual) > max_locations and removable:
+            individual.remove(removable.pop())
     return individual
 
 
@@ -219,11 +241,14 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
                 toolbox.mate(child1, child2) #if condition met, performs order crossover (see above)
                 del child1.fitness.values
                 del child2.fitness.values #deletes old fitness values, so they can be updated when order crossover occurs
+            enforce_required_stops(child1, required_stops)
+            enforce_required_stops(child2, required_stops)
 
         for mutant in offspring:
             if random.random() < mutation:
                 toolbox.mutate(mutant)
                 del mutant.fitness.values
+            enforce_required_stops(mutant, required_stops)
 
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid] #this block updates all fitness values with the updated ones
         for ind in invalid_ind:
@@ -248,12 +273,11 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
         extras = [ind for ind in sorted(pop, key=lambda x: x.fitness.values[1], reverse=True)
                   if ind not in sorted_pareto]
         sorted_pareto.extend(extras[:3 - len(sorted_pareto)])
-
-        return sorted_pareto[:3]
+    top_routes = sorted_pareto[:3]
 
     routes = []
-    print(f"\n--- Top {(3, len(sorted_pareto))} Routes for {travel_mode}---")
-    for i, ind in enumerate(sorted_pareto[:3]):
+    print(f"\n--- Top {min(3, len(sorted_pareto))} Routes for {travel_mode}---")
+    for i, ind in enumerate(top_routes):
         coordinates = [[locations_dict[loc_id]['longitude'], locations_dict[loc_id]['latitude']] for loc_id in ind]
         ors_route = get_ors_route(coordinates, travel_mode)
 
@@ -271,7 +295,7 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
                     'name': locations_dict[loc_id]['name'],
                     'latitude': locations_dict[loc_id]['latitude'],
                     'longitude': locations_dict[loc_id]['longitude'],
-                    'colour': get_category_colour(locations_dict[loc_id]['category_id']),
+                    'color': get_category_colour(locations_dict[loc_id]['category_id']),
                 } for loc_id in ind
             ],
             'geometry': ors_route.get('geometry') if ors_route else None

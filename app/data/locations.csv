@@ -1,5 +1,5 @@
-id,name,latitude,longitude,category_id,rating
-1,"The British Museum",51.5194,-0.1269,5,4.9
+id,name,latitude,longitude,category_id,rating,image
+1,"The British Museum",51.5194,-0.1269,5,4.9,britmuseum.jpg
 2,"Tate Modern",51.5076,-0.0994,5,4.8
 3,"National Gallery",51.5089,-0.1283,5,4.7
 4,"Natural History Museum",51.4969,-0.1764,5,4.8

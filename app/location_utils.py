@@ -67,6 +67,8 @@ def reset_db():
                         latitude=float(row['latitude']),
                         longitude=float(row['longitude']),
                         category_id=int(row['category_id']),
+                        address=row.get('address') or None,
+                        image=row.get('image', None)
                     )
                     db.session.add(location)
             print(f"--- Loaded locations from {locations_csv_path} ---")

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: routetracker
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn run:app
+    envVars:
+      - key: FLASK_APP
+        value: run.py
+      - key: PYTHONUNBUFFERED
+        value: "1"

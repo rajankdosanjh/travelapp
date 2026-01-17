@@ -1,113 +1,500 @@
 {% extends "base.html" %}
 {% import "bootstrap_wtf.html" as wtf %}
 
-{% block content %}
-<head>
-  <title>TikTour - London Route Planner</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}Map & Routes – UrbanTrail London{% endblock %}
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+{% block head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<style>
+  :root {
+      --tp-teal: #14b8a6;
+      --tp-coral: #fb7185;
+      --tp-sun:  #facc15;
+      --tp-ink:  #0f172a;
+  }
 
-  <style>
-    #map {
+  .planner-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+  }
+
+  @media (min-width: 992px) {
+      .planner-layout {
+          grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+      }
+  }
+
+  /* Stack left cards nicely */
+  .sidebar-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+  }
+
+  #map {
       height: 600px;
       width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .control-label {
-        margin-bottom: 10px;
-    }
-    .controls {
-      padding: 15px;
-      background-color: grey;
-      border-radius: 8px;
-      margin-bottom: 15px;
+      border-radius: 1.25rem;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+  }
+
+  .icon-pin {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      background: var(--pin-color, #64748b);
+      color: #0f172a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #ffffff;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
+      font-size: 0.95rem;
+      line-height: 1;
+  }
+
+  .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+  }
+
+  .mode-btn {
+      border-radius: 999px;
+      padding: 0.35rem 0.95rem;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      font-size: 0.85rem;
+  }
+
+  .mode-btn i {
+      font-size: 0.9rem;
+  }
+
+  .mode-btn.active {
+      background: var(--tp-teal);
+      border-color: var(--tp-teal);
+      color: #0b1120;
+      box-shadow: 0 8px 18px rgba(20, 184, 166, 0.35);
+  }
+
+  #clearroute-btn {
+      border-radius: 999px;
+      border: none;
+      padding: 0.35rem 0.9rem;
+      font-size: 0.85rem;
+      background: #f1f5f9;
+      color: #0f172a;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+  }
+
+  #clearroute-btn:hover {
+      background: #e2e8f0;
+  }
+
+  #selected-locations-list {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+  }
+
+  #selected-locations-list li {
+      padding: 0.35rem 0;
+      border-bottom: 1px dashed #e2e8f0;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
-      gap: 20px;
-      color: white;
-    }
-    #category-form {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    #category-form input[type="submit"], #clearroute-btn {
-      background-color: #1d77c8;
-      color: white;
+      gap: 0.4rem;
+  }
+
+  #selected-locations-list li:last-child {
+      border-bottom: none;
+  }
+
+  #route-details {
+      margin-top: 1.5rem;
+  }
+
+  .icon-pill {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: #e5f3f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f766e;
+      font-size: 1.1rem;
+  }
+
+  .icon-pill-soft {
+      background: #eff6ff;
+      color: #1d4ed8;
+  }
+
+  .small-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #94a3b8;
+  }
+
+  .theme-select {
+      border-radius: 999px;
+      padding-left: 0.9rem;
+      padding-right: 0.9rem;
+  }
+
+  .btn-generate {
+      border-radius: 999px;
+      padding-inline: 1.3rem;
+      background: var(--tp-teal);
+      border-color: var(--tp-teal);
+      font-weight: 600;
+  }
+
+  .btn-generate:hover {
+      background: #0d9488;
+      border-color: #0d9488;
+  }
+
+  .search-input {
+      border-radius: 999px;
+      padding-left: 1rem;
+  }
+
+  .search-btn {
+      border-radius: 999px;
+      padding-inline: 1.1rem;
+      background: #0f172a;
+      color: #f8fafc;
       border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    #category-form input[type="submit"]:hover{
-      background-color: #8e98a1;
-    }
-    .mode-btn {
-    color: white;
-    }
-    .mode-btn.active {
-        background-color: #6ea7da;
-    }
-    #clearroute-btn:hover {
-        background-color: #5a6268;
-    }
+  }
 
-    #selected-locations-container {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-    #routes-container {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-  </style>
-</head>
+  .search-btn:hover {
+      background: #111827;
+  }
 
-<body>
-<div class="controls">
-    <form id="category-form" class="form-inline" method="POST" action="">
-        <h4 class="control-label">{{ form.category.label }}</h4>
-        {{ form.hidden_tag() }}
-        <div class="form-group mb-2">
-            {{ form.category(id='category_select', class="form-control") }}
-        </div>
-        {{ form.submit(class="btn btn-primary mb-2 ml-2") }}
-    </form>
-    <div id="travel-mode-selector">
-        <button class="btn mode-btn active" data-mode="walking">Walking</button>
-        <button class="btn mode-btn" data-mode="driving">Driving</button>
-        <button class="btn mode-btn" data-mode="cycling">Cycling</button>
-    </div>
-    <button id="clearroute-btn">Clear Routes</button>
-</div>
-<div id="selected-locations-container">
-    <h4>Your Selected Stops</h4>
-    <ul id="selected-locations-list">
-        <li id="empty-selection-message"><i>No locations selected yet.<br> Once a route has been generated, click a marker on the map to add a location not currently on a route, or remove one that is on a route.</i></li>
-    </ul>
-</div>
-<div id="map"></div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="{{ url_for('static', filename='map.js') }}"></script>
+  .search-helper {
+      font-size: 0.78rem;
+      color: #6b7280;
+      margin-top: 0.35rem;
+  }
 
-<div id="route-details">
-    <div id="routes-container">
-    <h2>Your Routes</h2>
-        </div>
-</div>
+  /* Right: route panel ticket styling */
+  .routes-ticket {
+      border-radius: 1.1rem;
+      background: linear-gradient(135deg, #0f172a 0%, #111827 60%, #0f766e 100%);
+      color: #e5e7eb;
+      padding: 1rem 1.1rem;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.55);
+      margin-top: 0.5rem;
+      position: relative;
+      overflow: hidden;
+  }
 
-</body>
+  .routes-ticket::before,
+  .routes-ticket::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: #f9fafb;
+  }
 
+  .routes-ticket::before { left: -8px; }
+  .routes-ticket::after  { right: -8px; }
+
+  .routes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #9ca3af;
+  }
+
+  .routes-pill {
+      padding: 0.12rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 0.7rem;
+  }
+
+  .routes-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+  }
+
+  .routes-meta {
+      font-size: 0.8rem;
+      color: #cbd5f5;
+  }
+
+  /* Container where map.js will inject route content */
+  #routes-container > .route-card {
+      margin-top: 0.6rem;
+  }
+</style>
 {% endblock %}
 
+{% block content %}
+<div class="planner-layout">
+    <!-- Left column: selected locations + controls -->
+    <section>
+        <div class="sidebar-stack">
+
+            <!-- Selected locations card -->
+            <div class="card app-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-pill me-2">
+                            <i class="bi bi-bookmark-heart"></i>
+                        </span>
+                        <div>
+                            <h2 class="h6 mb-0">Selected stops</h2>
+                            <small class="text-muted">
+                                Tap map pins to add them here, then save your route.
+                            </small>
+                        </div>
+                    </div>
+
+                    <ul id="selected-locations-list">
+                        <li id="empty-selection-message">
+                            <i class="bi bi-emoji-smile me-1 text-muted"></i>
+                            <span class="text-muted">No locations selected yet. Tap a pin to add it.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Filters / controls card -->
+            <div class="card app-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-pill icon-pill-soft me-2">
+                            <i class="bi bi-funnel"></i>
+                        </span>
+                        <div>
+                            <h1 class="h6 mb-0">Plan your route</h1>
+                            <small class="text-muted">Pick a category and travel mode, then tap spots on the map.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small-label mb-1" for="category_select">
+                            {{ form.category.label }}
+                        </label>
+                        <form id="category-form"
+                              class="controls-bar"
+                              method="POST"
+                              action="">
+                            {{ form.hidden_tag() }}
+
+                            <div class="flex-grow-1">
+                                {{ form.category(id='category_select',
+                                                 class="form-select form-select-sm theme-select") }}
+                            </div>
+
+                            <div class="mt-2 mt-md-0">
+                                {{ form.submit(class="btn btn-generate btn-sm") }}
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="d-flex flex-wrap controls-bar mt-2">
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2">
+                            <span class="small-label">Mode</span>
+                            <div id="travel-mode-selector" class="d-flex gap-1">
+                                <button class="btn mode-btn active" data-mode="walking" type="button">
+                                    <i class="bi bi-person-walking me-1"></i> Walking
+                                </button>
+                                <button class="btn mode-btn" data-mode="driving" type="button">
+                                    <i class="bi bi-car-front me-1"></i> Driving
+                                </button>
+                                <button class="btn mode-btn" data-mode="cycling" type="button">
+                                    <i class="bi bi-bicycle me-1"></i> Cycling
+                                </button>
+                            </div>
+                        </div>
+
+                        <button id="clearroute-btn" class="ms-auto mt-2 mt-lg-0" type="button">
+                            <i class="bi bi-x-circle"></i>
+                            <span class="ms-1">Clear routes</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search/add location card -->
+            <div class="card app-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="icon-pill icon-pill-soft me-2">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <div>
+                            <h2 class="h6 mb-0">Find or add a place</h2>
+                            <small class="text-muted">Search the database or add something new.</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="small-label mb-1" for="location-search-input">
+                            Search locations
+                        </label>
+                        <form id="location-search-form" class="controls-bar">
+                            <div class="flex-grow-1">
+                                <input
+                                    id="location-search-input"
+                                    class="form-control form-control-sm search-input"
+                                    type="search"
+                                    placeholder="Try: Borough Market"
+                                    list="location-search-list">
+                                <datalist id="location-search-list"></datalist>
+                            </div>
+                            <button class="search-btn btn btn-sm" type="submit">
+                                <i class="bi bi-search me-1"></i>
+                                Find
+                            </button>
+                        </form>
+                        <div class="search-helper">We’ll zoom to the match and highlight it.</div>
+                    </div>
+
+                    <div id="missing-location-panel" class="missing-location">
+                        <div class="missing-title">Can't find it? Add it manually.</div>
+                        <form id="missing-location-form">
+                            <div class="mb-2">
+                                <input class="form-control form-control-sm" id="missing-name" type="text" placeholder="Location name">
+                            </div>
+                            <div class="mb-2">
+                                <input class="form-control form-control-sm" id="missing-query" type="text" placeholder="Paste Google Maps link or address">
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary mb-2" type="button" id="lookup-location-btn">
+                                <i class="bi bi-geo-alt me-1"></i>
+                                Look up location
+                            </button>
+                            <div id="geocode-result" class="geo-result d-none"></div>
+                            <div class="mb-2">
+                                <select class="form-select form-select-sm" id="missing-category">
+                                    <option value="1">Food and Drink</option>
+                                    <option value="2">History</option>
+                                    <option value="3">Shopping</option>
+                                    <option value="4">Nature</option>
+                                    <option value="5">Art and Culture</option>
+                                    <option value="6">Nightlife</option>
+                                </select>
+                            </div>
+                            <div class="missing-actions">
+                                <button class="btn btn-sm btn-dark" type="submit">
+                                    <i class="bi bi-plus-circle me-1"></i>
+                                    Add location
+                                </button>
+                                <span id="missing-location-message" class="small text-muted"></span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Right column: map + routes -->
+    <section>
+        <div class="card app-card mb-4">
+            <div class="card-body p-2">
+                <div class="d-flex align-items-center mb-2 px-2">
+                    <span class="icon-pill me-2">
+                        <i class="bi bi-map"></i>
+                    </span>
+                    <div>
+                        <h2 class="h6 mb-0">London map</h2>
+                        <small class="text-muted">
+                            Click pins to see details, save places, and add them to your route.
+                        </small>
+                    </div>
+                </div>
+                <div id="map"></div>
+            </div>
+        </div>
+
+        <div id="route-details">
+            <div class="routes-ticket">
+                <div class="routes-header">
+                    <span>Your route drafts</span>
+                    <span class="routes-pill">
+                        Generated by UrbanTrail
+                    </span>
+                </div>
+
+                <div class="routes-title">
+                    Pick a route below, then save the one that feels right.
+                </div>
+                <div class="routes-meta mb-2">
+                    We’ll show distance, sentiment and suggested order here once you generate routes.
+                </div>
+
+                <div id="routes-container">
+                    <!-- map.js will inject route cards here -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='map.js') }}"></script>
+{% endblock %}
+  .missing-location {
+      display: none;
+      border: 1px dashed #e2e8f0;
+      border-radius: 0.9rem;
+      padding: 0.8rem 0.9rem;
+      background: #f8fafc;
+  }
+
+  .missing-location.active {
+      display: block;
+  }
+
+  .missing-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #0f172a;
+  }
+
+  .missing-actions {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+  }
+
+  .missing-actions .btn {
+      border-radius: 999px;
+      padding-inline: 1.1rem;
+  }
+
+  .geo-result {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.78rem;
+      color: #475569;
+  }
