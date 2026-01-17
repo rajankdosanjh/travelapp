@@ -507,9 +507,14 @@ def add_route_feedback(route_id):
         rating=rating,
         body=body
     )
+    if route.user == current_user and not route.is_public:
+        route.is_public = True
     db.session.add(feedback)
     db.session.commit()
-    flash('Thanks for rating your route!', 'success')
+    if route.user == current_user and route.is_public:
+        flash('Thanks for rating your route! It is now visible in Community Routes.', 'success')
+    else:
+        flash('Thanks for rating your route!', 'success')
     if route.user == current_user:
         return redirect(url_for('saved_routes'))
     return redirect(url_for('community_routes'))
