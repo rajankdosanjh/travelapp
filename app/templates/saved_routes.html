@@ -161,6 +161,9 @@
 
         <div class="feedback-card">
             {% if current_user.is_authenticated %}
+            <div class="text-muted small mb-2">
+                Leave feedback to share this route in Community Routes.
+            </div>
             <form method="POST" action="{{ url_for('add_route_feedback', route_id=route.id) }}">
                 <div class="row g-2 align-items-center">
                     <div class="col-4">
