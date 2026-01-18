@@ -19,6 +19,7 @@ class Config:
     API_TOKEN_MAX_AGE = int(os.environ.get('API_TOKEN_MAX_AGE', 60 * 60 * 24 * 14))
     API_CORS_ORIGINS = os.environ.get('API_CORS_ORIGINS', '*')
     ORS_API_KEY = os.environ.get('ORS_API_KEY')
+    GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
     SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', '0') == '1'
     REMEMBER_COOKIE_SECURE = os.environ.get('REMEMBER_COOKIE_SECURE', '0') == '1'

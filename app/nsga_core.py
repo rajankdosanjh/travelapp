@@ -7,6 +7,7 @@ from app.models import Location
 
 # --- Configuration ---
 api_key_ors = os.environ.get('ORS_API_KEY')
+api_key_google = os.environ.get('GOOGLE_MAPS_API_KEY')
 min_locations = 5
 max_locations = 8
 population = 100 #number of locations in the database
@@ -93,6 +94,115 @@ def get_ors_route(coordinates, travel_mode = 'walking'):
     except (IndexError, KeyError, ValueError) as e: #catches errors with data parsing from data sent back by API
         print(f"ORS Response Error: Could not parse route from response. {e}")
         return None
+
+
+def decode_polyline(encoded):
+    index = 0
+    lat = 0
+    lng = 0
+    coordinates = []
+    while index < len(encoded):
+        shift = 0
+        result = 0
+        while True:
+            b = ord(encoded[index]) - 63
+            index += 1
+            result |= (b & 0x1f) << shift
+            shift += 5
+            if b < 0x20:
+                break
+        delta_lat = ~(result >> 1) if result & 1 else (result >> 1)
+        lat += delta_lat
+
+        shift = 0
+        result = 0
+        while True:
+            b = ord(encoded[index]) - 63
+            index += 1
+            result |= (b & 0x1f) << shift
+            shift += 5
+            if b < 0x20:
+                break
+        delta_lng = ~(result >> 1) if result & 1 else (result >> 1)
+        lng += delta_lng
+
+        coordinates.append([lng / 1e5, lat / 1e5])
+    return coordinates
+
+
+def get_google_transit_route(coordinates):
+    if len(coordinates) < 2:
+        return None
+    if not api_key_google:
+        print("Google Directions Error: GOOGLE_MAPS_API_KEY is not configured.")
+        return None
+
+    origin = f"{coordinates[0][1]},{coordinates[0][0]}"
+    destination = f"{coordinates[-1][1]},{coordinates[-1][0]}"
+    waypoints = []
+    for coord in coordinates[1:-1]:
+        waypoints.append(f"{coord[1]},{coord[0]}")
+
+    params = {
+        "origin": origin,
+        "destination": destination,
+        "mode": "transit",
+        "departure_time": "now",
+        "key": api_key_google,
+    }
+    if waypoints:
+        params["waypoints"] = "|".join(waypoints)
+
+    response = requests.get(
+        "https://maps.googleapis.com/maps/api/directions/json",
+        params=params,
+        timeout=10,
+    )
+    response.raise_for_status()
+    data = response.json()
+    routes = data.get("routes", [])
+    if not routes:
+        print("Google Directions Error: No routes found.")
+        return None
+
+    route = routes[0]
+    overview = route.get("overview_polyline", {}).get("points")
+    if not overview:
+        print("Google Directions Error: Missing overview polyline.")
+        return None
+
+    geometry = {
+        "type": "LineString",
+        "coordinates": decode_polyline(overview)
+    }
+
+    distance = 0
+    for leg in route.get("legs", []):
+        if leg.get("distance"):
+            distance += leg["distance"].get("value", 0)
+
+    return {
+        "distance": distance,
+        "geometry": geometry,
+    }
+
+
+def get_route_data(coordinates, travel_mode='walking'):
+    if travel_mode == 'transit':
+        return get_google_transit_route(coordinates)
+
+    ors_route = get_ors_route(coordinates, travel_mode)
+    if not ors_route:
+        return None
+
+    accurate_distance = 0
+    if 'properties' in ors_route and 'summary' in ors_route['properties']:
+        accurate_distance = ors_route['properties']['summary']['distance']
+
+    return {
+        'distance': accurate_distance,
+        'geometry': ors_route.get('geometry')
+    }
 
 
 # Objective Functions, distance and satisfaction
@@ -277,11 +387,8 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
     print(f"\n--- Top {min(3, len(sorted_pareto))} Routes for {travel_mode}---")
     for i, ind in enumerate(top_routes):
         coordinates = [[locations_dict[loc_id]['longitude'], locations_dict[loc_id]['latitude']] for loc_id in ind]
-        ors_route = get_ors_route(coordinates, travel_mode)
-
-        accurate_distance = 0
-        if ors_route and 'properties' in ors_route and 'summary' in ors_route['properties']:
-            accurate_distance = ors_route['properties']['summary']['distance']
+        route_data = get_route_data(coordinates, travel_mode) or {}
+        accurate_distance = route_data.get('distance', 0)
 
         route_info = {
             'id': i + 1,
@@ -296,7 +403,7 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
                     'color': get_category_colour(locations_dict[loc_id]['category_id']),
                 } for loc_id in ind
             ],
-            'geometry': ors_route.get('geometry') if ors_route else None
+            'geometry': route_data.get('geometry')
         }
         routes.append(route_info)
         print(
@@ -305,7 +412,7 @@ def get_optimized_routes(user_preferences, required_stops=[], travel_mode = 'wal
     print("--- Optimization Finished ---")
     return routes
 
-def recalculate_route_geometry(location_ids, travel_mode='walking'): #Takes a list of location IDs and a travel mode, returns ORS route details.
+def recalculate_route_geometry(location_ids, travel_mode='walking'): #Takes a list of location IDs and a travel mode, returns route details.
     locations_dict = locations_to_dict()
     coordinates = []
     for loc_id in location_ids:
@@ -316,16 +423,11 @@ def recalculate_route_geometry(location_ids, travel_mode='walking'): #Takes a li
     if len(coordinates) < 2:
         return None
 
-    ors_route = get_ors_route(coordinates, travel_mode)
-
-    if not ors_route:
+    route_data = get_route_data(coordinates, travel_mode)
+    if not route_data:
         return None
 
-    accurate_distance = 0
-    if 'properties' in ors_route and 'summary' in ors_route['properties']:
-        accurate_distance = ors_route['properties']['summary']['distance']
-
     return {
-        'distance': accurate_distance,
-        'geometry': ors_route.get('geometry')
+        'distance': route_data.get('distance', 0),
+        'geometry': route_data.get('geometry')
     }
