@@ -74,10 +74,10 @@
   }
 
   .mode-btn.active {
-      background: var(--tp-teal);
-      border-color: var(--tp-teal);
+      background: var(--mode-color, var(--tp-teal));
+      border-color: var(--mode-color, var(--tp-teal));
       color: #0b1120;
-      box-shadow: 0 8px 18px rgba(20, 184, 166, 0.35);
+      box-shadow: 0 8px 18px var(--mode-shadow, rgba(20, 184, 166, 0.35));
   }
 
   #clearroute-btn {

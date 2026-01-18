@@ -86,6 +86,26 @@
         margin-bottom: 0.45rem;
     }
 
+    .route-meta-pill.mode-walking {
+        background: rgba(20, 184, 166, 0.2);
+        color: #e2e8f0;
+    }
+
+    .route-meta-pill.mode-driving {
+        background: rgba(251, 113, 133, 0.22);
+        color: #ffe4e6;
+    }
+
+    .route-meta-pill.mode-cycling {
+        background: rgba(250, 204, 21, 0.25);
+        color: #fef9c3;
+    }
+
+    .route-meta-pill.mode-transit {
+        background: rgba(56, 189, 248, 0.22);
+        color: #e0f2fe;
+    }
+
     .route-meta-pill span {
         display: inline-flex;
         align-items: center;
@@ -154,7 +174,7 @@
         </div>
 
         <div class="ticket-title">Route #{{ route.id }}</div>
-        <div class="route-meta-pill">
+        <div class="route-meta-pill mode-{{ route.travel_mode }}">
             <span>
                 <i class="bi bi-compass"></i>
                 {{ route.travel_mode|capitalize }}

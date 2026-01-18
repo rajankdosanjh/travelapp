@@ -3,7 +3,19 @@ let allLocations = {};
 let routeIncludedLocations = new Set(); //Creates a Set to store the IDs of all locations that are part of the currently displayed, algorithm-generated routes.
 let currentTravelMode = 'walking';
 let currentDisplayedRoutes = [];
-const routeColors = ['#007bff', '#28a745', '#dc3545'];
+const routeColorPalettes = {
+    walking: ['#14b8a6', '#2dd4bf', '#0d9488'],
+    driving: ['#fb7185', '#f43f5e', '#be123c'],
+    cycling: ['#facc15', '#fde047', '#eab308'],
+    transit: ['#38bdf8', '#0ea5e9', '#0284c7']
+};
+let currentRouteColors = routeColorPalettes[currentTravelMode];
+const travelModeColors = {
+    walking: '#14b8a6',
+    driving: '#fb7185',
+    cycling: '#facc15',
+    transit: '#38bdf8'
+};
 const mapMarkersById = {};
 let geocodedLocation = null;
 
@@ -358,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (route.geometry) {
                     L.geoJSON(route.geometry, {
-                        style: { color: routeColors[i % routeColors.length], weight: 6, opacity: 0.75 }
+                        style: { color: currentRouteColors[i % currentRouteColors.length], weight: 6, opacity: 0.75 }
                     }).addTo(resultsLayer);
                 }
                 route.locations.forEach(loc => {
@@ -413,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentDisplayedRoutes.forEach((route, index) => {
                 if (route.geometry) {
                     L.geoJSON(route.geometry, {
-                        style: { color: routeColors[index % routeColors.length], weight: 6, opacity: 0.75 }
+                        style: { color: currentRouteColors[index % currentRouteColors.length], weight: 6, opacity: 0.75 }
                     }).addTo(resultsLayer);
                 }
                 route.locations.forEach(loc => {
@@ -459,12 +471,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const travelModeSelector = document.getElementById('travel-mode-selector');
     if (travelModeSelector) {
+        const hexToRgba = (hex, alpha) => {
+            const clean = hex.replace('#', '');
+            const bigint = parseInt(clean, 16);
+            const r = (bigint >> 16) & 255;
+            const g = (bigint >> 8) & 255;
+            const b = bigint & 255;
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+        const setModeColor = (mode) => {
+            const color = travelModeColors[mode] || travelModeColors.walking;
+            travelModeSelector.style.setProperty('--mode-color', color);
+            travelModeSelector.style.setProperty('--mode-shadow', hexToRgba(color, 0.35));
+        };
+        setModeColor(currentTravelMode);
         travelModeSelector.addEventListener('click', function(event) {
             const button = event.target.closest('.mode-btn');
             if (button) {
                 travelModeSelector.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 currentTravelMode = button.dataset.mode;
+                currentRouteColors = routeColorPalettes[currentTravelMode] || routeColorPalettes.walking;
+                setModeColor(currentTravelMode);
 
                 // Instead of regenerating routes which takes longer, just recalculates and redraws route when mode of transport changes
                 redrawRoutesWithNewMode(currentTravelMode);
