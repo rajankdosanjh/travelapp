@@ -74,6 +74,24 @@
         margin-top: .4rem;
     }
 
+    .route-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        background: rgba(15, 118, 110, 0.15);
+        color: #e2e8f0;
+        font-size: 0.78rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .route-meta-pill span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
     .btn-delete {
         border-radius: 999px;
         background: #fb7185;
@@ -136,11 +154,15 @@
         </div>
 
         <div class="ticket-title">Route #{{ route.id }}</div>
-        <div class="text-muted small">
-            Travel mode: {{ route.travel_mode|capitalize }}
-        </div>
-        <div class="text-muted small mb-2">
-            Satisfaction {{ route.satisfaction | round(2) }}
+        <div class="route-meta-pill">
+            <span>
+                <i class="bi bi-compass"></i>
+                {{ route.travel_mode|capitalize }}
+            </span>
+            <span>
+                <i class="bi bi-stars"></i>
+                {{ route.satisfaction | round(2) }}
+            </span>
         </div>
 
         <ul class="ticket-stops">
