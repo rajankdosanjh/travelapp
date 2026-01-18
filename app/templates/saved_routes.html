@@ -136,6 +136,9 @@
         </div>
 
         <div class="ticket-title">Route #{{ route.id }}</div>
+        <div class="text-muted small">
+            Travel mode: {{ route.travel_mode|capitalize }}
+        </div>
         <div class="text-muted small mb-2">
             Satisfaction {{ route.satisfaction | round(2) }}
         </div>
