@@ -28,9 +28,7 @@ def locations_to_dict(category_filter=None): #Fetches all locations from the dat
 
     locations_data = {}
     for loc in locations:
-        avg_sentiment = 0
-        if loc.reviews:
-            avg_sentiment = sum(r.sentiment for r in loc.reviews) / len(loc.reviews)
+        avg_sentiment = loc.avg_sentiment
 
         locations_data[loc.id] = {
             'name': loc.name,

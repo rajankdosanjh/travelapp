@@ -54,6 +54,8 @@ def get_sentiment_score(text):
     )
     return max(-1.0, min(1.0, score))
 
+
+
 def is_allowed_photo(filename):
     _, ext = os.path.splitext(filename)
     return ext.lower() in ALLOWED_PHOTO_EXTENSIONS

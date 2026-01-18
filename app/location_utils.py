@@ -78,9 +78,10 @@ def reset_db():
             with open(users_csv_path, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
+                    username = row['username'].strip()
                     user = User(
-                        name = row['name'],
-                        username = row['username'],
+                        name=row['name'].strip(),
+                        username=username,
                     )
                     user.set_password(row['password'])
                     db.session.add(user)
