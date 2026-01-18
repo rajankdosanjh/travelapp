@@ -130,19 +130,7 @@ def decode_polyline(encoded):
     return coordinates
 
 
-def get_google_transit_route(coordinates):
-    if len(coordinates) < 2:
-        return None
-    if not api_key_google:
-        print("Google Directions Error: GOOGLE_MAPS_API_KEY is not configured.")
-        return None
-
-    origin = f"{coordinates[0][1]},{coordinates[0][0]}"
-    destination = f"{coordinates[-1][1]},{coordinates[-1][0]}"
-    waypoints = []
-    for coord in coordinates[1:-1]:
-        waypoints.append(f"{coord[1]},{coord[0]}")
-
+def _google_transit_request(origin, destination):
     params = {
         "origin": origin,
         "destination": destination,
@@ -150,40 +138,63 @@ def get_google_transit_route(coordinates):
         "departure_time": "now",
         "key": api_key_google,
     }
-    if waypoints:
-        params["waypoints"] = "|".join(waypoints)
-
     response = requests.get(
         "https://maps.googleapis.com/maps/api/directions/json",
         params=params,
         timeout=10,
     )
     response.raise_for_status()
-    data = response.json()
-    routes = data.get("routes", [])
-    if not routes:
-        print("Google Directions Error: No routes found.")
+    return response.json()
+
+
+def get_google_transit_route(coordinates):
+    if len(coordinates) < 2:
+        return None
+    if not api_key_google:
+        print("Google Directions Error: GOOGLE_MAPS_API_KEY is not configured.")
         return None
 
-    route = routes[0]
-    overview = route.get("overview_polyline", {}).get("points")
-    if not overview:
-        print("Google Directions Error: Missing overview polyline.")
+    combined_coords = []
+    total_distance = 0
+
+    for start, end in zip(coordinates[:-1], coordinates[1:]):
+        origin = f"{start[1]},{start[0]}"
+        destination = f"{end[1]},{end[0]}"
+        data = _google_transit_request(origin, destination)
+        if data.get("status") != "OK":
+            print(f"Google Directions Error: {data.get('status')}")
+            return None
+
+        routes = data.get("routes", [])
+        if not routes:
+            print("Google Directions Error: No routes found.")
+            return None
+
+        route = routes[0]
+        overview = route.get("overview_polyline", {}).get("points")
+        if not overview:
+            print("Google Directions Error: Missing overview polyline.")
+            return None
+
+        segment_coords = decode_polyline(overview)
+        if combined_coords and segment_coords:
+            if combined_coords[-1] == segment_coords[0]:
+                segment_coords = segment_coords[1:]
+        combined_coords.extend(segment_coords)
+
+        for leg in route.get("legs", []):
+            if leg.get("distance"):
+                total_distance += leg["distance"].get("value", 0)
+
+    if not combined_coords:
         return None
-
-    geometry = {
-        "type": "LineString",
-        "coordinates": decode_polyline(overview)
-    }
-
-    distance = 0
-    for leg in route.get("legs", []):
-        if leg.get("distance"):
-            distance += leg["distance"].get("value", 0)
 
     return {
-        "distance": distance,
-        "geometry": geometry,
+        "distance": total_distance,
+        "geometry": {
+            "type": "LineString",
+            "coordinates": combined_coords,
+        },
     }
 
 
