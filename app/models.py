@@ -35,9 +35,9 @@ class Location(db.Model):
 
     @property
     def avg_sentiment(self):
-        if not self.reviews:
+        if not self.feedbacks:
             return 0
-        return sum(r.sentiment for r in self.reviews) / len(self.reviews)
+        return sum(fb.rating for fb in self.feedbacks) / len(self.feedbacks)
 
     @property
     def category_name(self):

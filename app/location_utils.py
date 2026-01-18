@@ -74,31 +74,6 @@ def reset_db():
             print(f"--- Loaded locations from {locations_csv_path} ---")
             db.session.commit()
 
-            # 2. Loads Reviews and Calculate Sentiment
-            tweets_csv_path = 'app/data/tweets.csv'
-            with open(tweets_csv_path, mode='r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    # --- THIS IS THE FIX ---
-                    # Skips any row where the location_id is not a digit (i.e., the header row)
-                    if not row['location_id'].isdigit():
-                        continue
-
-                    review_text = row['tweet_text']
-
-                    # Uses classifier to get the nuanced sentiment score
-                    nuanced_sentiment_score = classify_review(review_text, classifier, vectorizer, word_features)
-
-                    review = Review(
-                        location_id=int(row['location_id']),
-                        text=review_text,
-                        sentiment=nuanced_sentiment_score,
-                        username=row['username']
-                    )
-                    db.session.add(review)
-            print(f"--- Loaded and analyzed reviews from {tweets_csv_path} ---")
-            db.session.commit()
-
             users_csv_path = 'app/data/users.csv'
             with open(users_csv_path, mode='r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)

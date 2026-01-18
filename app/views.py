@@ -174,7 +174,7 @@ def show_locations():
             'category_id': loc.category_id,
             'category_name': category_name,
             'color': CATEGORY_COLORS.get(loc.category_id, 'gray'),
-            'reviews': [review.text for review in loc.reviews]
+            'reviews': [feedback.body for feedback in loc.feedbacks]
         }
         data.append(location_data)
     return jsonify(data)

@@ -96,34 +96,4 @@
 <p class="text-muted fst-italic">No community feedback yet. Be the first to add one.</p>
 {% endif %}
 
-{% if reviews %}
-    {% for review in reviews %}
-    <div class="review-card">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong>@{{ review.username }}</strong>
-
-            {% if review.sentiment > 0.4 %}
-                <span class="sentiment-chip sentiment-positive">
-                    <i class="bi bi-emoji-smile"></i>
-                    {{ review.sentiment | round(2) }}
-                </span>
-            {% elif review.sentiment > -0.4 %}
-                <span class="sentiment-chip sentiment-neutral">
-                    <i class="bi bi-emoji-neutral"></i>
-                    {{ review.sentiment | round(2) }}
-                </span>
-            {% else %}
-                <span class="sentiment-chip sentiment-negative">
-                    <i class="bi bi-emoji-frown"></i>
-                    {{ review.sentiment | round(2) }}
-                </span>
-            {% endif %}
-        </div>
-
-        <p class="mb-0">{{ review.text }}</p>
-    </div>
-    {% endfor %}
-{% else %}
-    <p class="text-muted fst-italic">No reviews yet for this location.</p>
-{% endif %}
 {% endblock %}
