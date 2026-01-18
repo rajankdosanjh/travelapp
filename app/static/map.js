@@ -92,14 +92,16 @@ function createPopUps(loc, marker) {
     const buttonRow = document.createElement('div');
     buttonRow.className = 'd-flex flex-wrap gap-2 mt-2';
 
-    // See Reviews button (only if reviews exist)
+    // See/Add Reviews button (always available)
+    const reviewsButton = document.createElement('a');
+    reviewsButton.href = `location/${loc.id}/reviews`;
+    reviewsButton.className = 'btn btn-outline-primary btn-sm rounded-pill';
     if (loc.reviews && loc.reviews.length > 0) {
-        const reviewsButton = document.createElement('a');
-        reviewsButton.href = `location/${loc.id}/reviews`;
-        reviewsButton.className = 'btn btn-outline-primary btn-sm rounded-pill';
         reviewsButton.innerHTML = `<i class="bi bi-chat-square-text me-1"></i> See reviews`;
-        buttonRow.appendChild(reviewsButton);
+    } else {
+        reviewsButton.innerHTML = `<i class="bi bi-chat-square-text me-1"></i> Add review`;
     }
+    buttonRow.appendChild(reviewsButton);
 
     // Save place button
     const saveButton = document.createElement('button');
